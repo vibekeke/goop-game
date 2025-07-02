@@ -12,7 +12,15 @@ namespace GoopGame.Engine
 
         public void SetState(BaseState state)
         {
+            State.ExitState(this); // Exit the current state
             State = state;
+            State.EnterState(this); // Enter the new state
+        }
+
+        private void Awake()
+        {
+            if (State != null)
+                State.EnterState(this);
         }
 
         private void Update()

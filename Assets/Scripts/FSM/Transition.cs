@@ -1,4 +1,5 @@
 using GoopGame.Engine;
+using System;
 using UnityEngine;
 
 namespace GoopGame.FSM
@@ -6,7 +7,8 @@ namespace GoopGame.FSM
     /// <summary>
     /// Represents a transition in the finite state machine (FSM) that occurs based on a decision.
     /// </summary>
-    public sealed class Transition : ScriptableObject
+    [Serializable]
+    public sealed class Transition
     {
         public Decision Decision;
         public BaseState OnTrueState;
