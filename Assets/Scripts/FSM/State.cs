@@ -1,11 +1,13 @@
 using GoopGame.Engine;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace GoopGame.FSM
 {
     /// <summary>
     /// A state in a finite state machine (FSM).
     /// </summary>
+    [CreateAssetMenu(fileName = "State", menuName = "GoopGame/FSM/Create new State", order = 0)]
     public sealed class State : BaseState
     {
         /// <summary>
