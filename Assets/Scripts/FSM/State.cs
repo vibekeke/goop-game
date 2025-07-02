@@ -24,11 +24,18 @@ namespace GoopGame.FSM
         /// </summary>
         public override void Execute(Goop goop)
         {
+            bool busy = false;
             foreach (var action in States)
+            {
+                if (action.IsBusyDuringAction)              //check if any action makes goop currently busy.
+                    busy = true;
                 action.Execute(goop);
+            }
 
             foreach (var transition in Transitions)
-                transition.Exectue(goop);
+            {
+                transition.Exectue(goop, busy);
+            }
         }
     }
 }

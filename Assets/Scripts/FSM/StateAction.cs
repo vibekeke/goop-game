@@ -8,6 +8,10 @@ namespace GoopGame.FSM
     /// </summary>
     public abstract class StateAction : ScriptableObject
     {
+        /// <summary>
+        /// Indicates whether the action should mark the Goop as busy, relevant to decision evaluations.
+        /// </summary>
+        public bool IsBusyDuringAction;
         public abstract void Execute(Goop goop);
     }
 }
