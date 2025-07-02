@@ -1,4 +1,5 @@
 using GoopGame.Engine;
+using System;
 using UnityEngine;
 
 namespace GoopGame.FSM
@@ -6,7 +7,8 @@ namespace GoopGame.FSM
     /// <summary>
     /// Represents a transition in the finite state machine (FSM) that occurs based on a decision.
     /// </summary>
-    public sealed class Transition : ScriptableObject
+    [Serializable]
+    public sealed class Transition
     {
         public Decision Decision;
         public BaseState OnTrueState;
@@ -15,8 +17,13 @@ namespace GoopGame.FSM
         /// <summary>
         /// Executes the transition based on the decision made by the Decision object.
         /// </summary>
-        public void Exectue(Goop goop)
+        /// <param name="busy"> Indicates whether the Goop is currently busy.</param>
+        public void Exectue(Goop goop, bool busy)
         {
+            // If the decision cannot be evaluated while busy and Goop is busy, skip evaluation.
+            if (!Decision.CanEvaluateWhileBusy && busy)
+                return;
+
             bool decision = Decision.Decide(goop);
 
             //If null, it should remain in current state so no state change occurs.

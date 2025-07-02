@@ -1,19 +1,15 @@
+using GoopGame.Engine;
 using UnityEngine;
 
 namespace GoopGame.FSM
 {
-    public class TestAction : MonoBehaviour
+    [CreateAssetMenu(fileName = "TestAction", menuName = "GoopGame/FSM/Actions/Create new TestAction")]
+    public class TestAction : StateAction
     {
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Start()
+        public string Message;
+        public override void Execute(Goop goop)
         {
-        
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-        
+            Debug.Log($"Executing TestAction: {Message}");
         }
     }
 }
