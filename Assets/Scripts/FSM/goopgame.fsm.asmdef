@@ -1,0 +1,16 @@
+{
+    "name": "goopgame.fsm",
+    "rootNamespace": "GoopGame.FSM",
+    "references": [
+        "GUID:d91afe2ededf68642bbefd0fee6d5413"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
