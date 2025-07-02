@@ -1,51 +1,54 @@
 using UnityEngine;
 
-//With throwing mechanics
 public class Dragggable : MonoBehaviour
 {
     Vector2 oldPos = Vector2.zero, releaseVelocity;
     private Rigidbody2D rb;
-    bool grabbing = false, queueRelease =false;
+    private bool grabbing = false, queueRelease = false;
+    public float throwSpeedNerf = 10f; //Most natural way of making the throw less powerful lmao
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        Application.targetFrameRate = 60;
     }
 
     void Update()
     {
-
         if (Input.GetMouseButtonDown(0))
         {
-            grabbing = true;
-            oldPos = transform.position;
+            Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Collider2D hit = Physics2D.OverlapPoint(mouseWorldPos);
+            if (hit != null && hit.gameObject == gameObject)
+            {
+                grabbing = true;
+                oldPos = rb.position;
+                rb.bodyType = RigidbodyType2D.Kinematic; // Disable physics while dragging
+            }
         }
-        else if (Input.GetMouseButtonUp(0))
+        else if (Input.GetMouseButtonUp(0) && grabbing)
         {
-            grabbing= false;
+            grabbing = false;
             queueRelease = true;
         }
     }
 
-    private void FixedUpdate()
+    void FixedUpdate()
     {
-        if (grabbing) //Get the velocity of the mousepos
+        if (grabbing)
         {
             Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            rb.MovePosition(pos);            
-            releaseVelocity = rb.position - oldPos;
-            oldPos = rb.position;
-
-            
-            rb.angularVelocity = Mathf.Clamp(rb.angularVelocity, -180f, 180f);
+            releaseVelocity = pos - oldPos; // raw delta per frame
+            rb.MovePosition(pos);
+            oldPos = pos;
         }
-        if (queueRelease)   //Add releaseVelocity to the rb
-        {            
+
+        if (queueRelease)
+        {
             queueRelease = false;
-            rb.linearVelocity = (releaseVelocity / Mathf.Sqrt(Time.fixedDeltaTime));
+            rb.bodyType = RigidbodyType2D.Dynamic;
 
+            // Convert to velocity (units/second) and clamp it
+            rb.linearVelocity = releaseVelocity / Time.fixedDeltaTime / throwSpeedNerf;
         }
-
     }
 }
