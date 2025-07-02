@@ -6,6 +6,7 @@ namespace GoopGame.FSM
 {
     /// <summary>
     /// Represents a transition in the finite state machine (FSM) that occurs based on a decision.
+    /// Responsible for determining the next state based on the outcome of a decision.
     /// </summary>
     [Serializable]
     public sealed class Transition
