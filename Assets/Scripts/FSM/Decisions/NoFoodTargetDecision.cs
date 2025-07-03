@@ -9,16 +9,12 @@ namespace GoopGame.FSM
     /// A decision that waits for a random amount of time before transitioning to the next state.
     /// Transition should not have a false state.
     /// </summary>
-    [CreateAssetMenu(fileName = "FoodEnteredDecision", menuName = "GoopGame/FSM/Decisions/Create new FoodEnteredDecision")]
-    public class FoodEnteredDecision : Decision
+    [CreateAssetMenu(fileName = "NoFoodTargetDecision", menuName = "GoopGame/FSM/Decisions/Create new NoFoodTargetDecision")]
+    public class NoFoodTargetDecision : Decision
     {
         public override bool Decide(Goop goop)
         {
-            if (goop.TouchedFood != null)
-            {
-                Debug.Log("Touched to food.");
-            }
-            return goop.TouchedFood != null;
+                return goop.CurrentFoodTarget == null;
         }
     }
 }

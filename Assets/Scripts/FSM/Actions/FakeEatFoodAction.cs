@@ -10,11 +10,12 @@ namespace GoopGame.FSM
 
         public override void Execute(Goop goop)
         {
-            Debug.Log($"Executing TestAction: {Message}");   
+            Debug.Log($"Executing TestAction: {Message}");
             if (goop.TouchedFood != null)
             {
                 Destroy(goop.TouchedFood.gameObject); //Food should delete self, no?
                 goop.ClearTouchedFood();
+                goop.ClearFoodTarget();
                 // …play eat animation, then transition back to Idle…
             }
         }

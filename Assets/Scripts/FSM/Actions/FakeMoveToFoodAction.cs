@@ -7,7 +7,7 @@ namespace GoopGame.FSM
     public class FakeMoveToFoodAction : StateAction
     {
         public string Message;
-        public float moveSpeed = 2f;
+        public float moveSpeed = 5f;
 
         public override void Execute(Goop goop)
         {

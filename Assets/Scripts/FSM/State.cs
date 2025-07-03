@@ -21,7 +21,8 @@ namespace GoopGame.FSM
 
         public override void EnterState(Goop goop)
         {
-            foreach(var transition in Transitions)
+
+            foreach (var transition in Transitions)
             {
                 transition.Decision.RegisterGoop(goop);     // Register the Goop with each decision in the transition
             }

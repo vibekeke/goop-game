@@ -9,12 +9,13 @@ namespace GoopGame.Engine
         /// </summary>
         [field: SerializeField]
         public BaseState State { get; private set; }
-        
+
         private Food _touchedFood;
         public Food TouchedFood => _touchedFood; //Makes it read-only
 
         public void SetState(BaseState state)
         {
+            Debug.Log($"{name}: {this.State?.name ?? "NULL"} → {state.name}");
             State.ExitState(this); // Exit the current state
             State = state;
             State.EnterState(this); // Enter the new state
@@ -68,6 +69,11 @@ namespace GoopGame.Engine
         public void ClearTouchedFood()
         {
             _touchedFood = null;
+        }
+
+        public void ClearFoodTarget()
+        {
+            CurrentFoodTarget = null;
         }
     }
 }
