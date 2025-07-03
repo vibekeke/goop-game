@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 121a192ea8740874fb37ed1a5d9481da, type: 3}
   m_Name: TestAction
   m_EditorClassIdentifier: 
-  Message: Simen Test
+  IsBusyDuringAction: 0
+  Message: Being idle uwu

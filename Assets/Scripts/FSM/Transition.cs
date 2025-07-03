@@ -33,7 +33,7 @@ namespace GoopGame.FSM
             else if (decision && OnFalseState != null)
                 goop.SetState(OnFalseState);
 
-            
+            /*
             Debug.Log($"[FSM] Checking “{Decision.name}” → OnTrueState = {OnTrueState?.name ?? "NULL"}");
             Debug.Log($"[FSM] Decision “{Decision.name}” returned {decision}");
             if (decision && OnTrueState != null)
@@ -46,6 +46,7 @@ namespace GoopGame.FSM
                 Debug.Log($"[FSM] → Transition firing (false path), going to {OnFalseState.name}");
                 goop.SetState(OnFalseState);
             }
+            */
 
         }
     }
