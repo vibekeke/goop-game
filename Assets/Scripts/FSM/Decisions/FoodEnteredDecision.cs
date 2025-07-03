@@ -9,13 +9,17 @@ namespace GoopGame.FSM
     /// A decision that waits for a random amount of time before transitioning to the next state.
     /// Transition should not have a false state.
     /// </summary>
-    [CreateAssetMenu(fileName = "FoodOnScreenDecision", menuName = "GoopGame/FSM/Decisions/Create new FoodOnScreenDecision")]
-    public class FoodOnScreenDecision : Decision
+    [CreateAssetMenu(fileName = "FoodEnteredDecision", menuName = "GoopGame/FSM/Decisions/Create new FoodEnteredDecision")]
+    public class FoodEnteredDecision : Decision
     {
         public override bool Decide(Goop goop)
         {
-                Food[] foods = UnityEngine.Object.FindObjectsByType<Food>(FindObjectsSortMode.None);
-                return foods.Length > 0;
+            return goop.TouchedFood != null;
+        }
+
+        public override void UnregisterGoop(Goop goop)
+        {
+            goop.ClearTouchedFood();
         }
     }
 }

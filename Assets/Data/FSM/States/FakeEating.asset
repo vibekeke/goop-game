@@ -13,5 +13,8 @@ MonoBehaviour:
   m_Name: FakeEating
   m_EditorClassIdentifier: 
   States:
-  - {fileID: 0}
-  Transitions: []
+  - {fileID: 11400000, guid: 7a97cdf9d5c9d48d19f4069474e0bd9b, type: 2}
+  Transitions:
+  - Decision: {fileID: 11400000, guid: deb9d3c32d16daa40a76243b411eaaff, type: 2}
+    OnTrueState: {fileID: 11400000, guid: e218b2b0366df5e448213bbc94286b22, type: 2}
+    OnFalseState: {fileID: 11400000, guid: f4a682a78c9070c45a2bc1ae54bff121, type: 2}
