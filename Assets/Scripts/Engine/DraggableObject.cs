@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace GoopGame.Engine {
     public class DraggableObject : MonoBehaviour
@@ -15,11 +16,11 @@ namespace GoopGame.Engine {
 
         void Update()
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
             {
                 Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 Collider2D hit = Physics2D.OverlapPoint(mouseWorldPos);
-                if (hit.gameObject == gameObject)
+                if (hit != null && hit.gameObject == gameObject)
                 {
                     grabbing = true;
                     oldPos = rb.position;

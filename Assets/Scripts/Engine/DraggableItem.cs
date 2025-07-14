@@ -33,6 +33,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         Debug.Log("End Drag");
         transform.SetParent(parentAfterDrag);
+        transform.localPosition = Vector3.zero;
         image.raycastTarget = true;
     }
 }

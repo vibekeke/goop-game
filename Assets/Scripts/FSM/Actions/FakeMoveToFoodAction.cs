@@ -11,7 +11,7 @@ namespace GoopGame.FSM
 
         public override void Execute(Goop goop)
         {
-            Debug.Log($"Executing TestAction: {Message}");
+            //Debug.Log($"Executing TestAction: {Message}");
             
             goop.FindNearestFood();
             if (goop.CurrentFoodTarget == null)

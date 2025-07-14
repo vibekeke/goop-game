@@ -1,5 +1,6 @@
 using GoopGame.Engine;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace GoopGame.FSM
 {
