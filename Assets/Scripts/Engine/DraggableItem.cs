@@ -2,11 +2,23 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Image = UnityEngine.UI.Image;
+using GoopGame.Engine;
 
 public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
+
+    [Header("UI")]
     public Image image;
+
+    [HideInInspector] public Item item;
     [HideInInspector] public Transform parentAfterDrag;
+
+    public void InitialiseItem(Item newItem)
+    {
+        item = newItem;
+        image.sprite = newItem.image;
+    }
+
 
     public void OnBeginDrag(PointerEventData eventData)
     {

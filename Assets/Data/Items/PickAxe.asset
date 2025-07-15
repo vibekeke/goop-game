@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c1e6340821fd4643b9a39a52d26db3a, type: 3}
+  m_Name: PickAxe
+  m_EditorClassIdentifier: 
+  tile: {fileID: 0}
+  type: 1
+  actionType: 1
+  range: {x: 5, y: 4}
+  stackable: 0
+  image: {fileID: 5807921338739458136, guid: ea0f1b493338e6a47b9df7804199f728, type: 3}
