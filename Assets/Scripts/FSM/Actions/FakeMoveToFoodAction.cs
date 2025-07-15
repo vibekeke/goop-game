@@ -4,7 +4,7 @@ using UnityEngine;
 namespace GoopGame.FSM
 {
     [CreateAssetMenu(fileName = "MoveToFoodAction", menuName = "GoopGame/FSM/Actions/Create new MoveToFoodAction")]
-    public class FakeMoveToFoodAction : StateAction
+    public class FakeMoveToFoodAction : StateAction 
     {
         public string Message;
         public float moveSpeed = 5f;
@@ -26,3 +26,4 @@ namespace GoopGame.FSM
         }
     }
 }
+
