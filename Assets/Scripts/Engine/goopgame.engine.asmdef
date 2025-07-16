@@ -1,7 +1,9 @@
 {
     "name": "goopgame.engine",
     "rootNamespace": "GoopGame.Engine",
-    "references": [],
+    "references": [
+        "GUID:088c82e76bf255542b3c7f4fc04ab04f"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
