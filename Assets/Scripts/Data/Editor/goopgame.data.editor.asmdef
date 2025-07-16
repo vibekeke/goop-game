@@ -1,0 +1,18 @@
+{
+    "name": "goopgame.data.editor",
+    "rootNamespace": "GoopGame.Data.Editor",
+    "references": [
+        "GUID:088c82e76bf255542b3c7f4fc04ab04f"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
