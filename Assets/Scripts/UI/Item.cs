@@ -8,9 +8,11 @@ namespace GoopGame.Engine
     [CreateAssetMenu(menuName = "Scriptable object/Item")]
     public class Item : ScriptableObject
     {
-        public TileBase tile;
+
+        [Header("Only gameplay")]
+        public TileBase tile; //shows a graphic on the in-game grid (won't be used)
         public ItemType type;
-        public ArticulationDriveType actionType;
+        public ActionType actionType;
         public Vector2Int range = new Vector2Int(5, 4); //won't be used in the inventory itself, but defines some other stuff
 
         [Header("Only UI")]

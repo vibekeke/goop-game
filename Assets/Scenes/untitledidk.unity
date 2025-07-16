@@ -203,6 +203,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 40460974}
   m_CullTransparentMesh: 1
+--- !u!1 &90948750
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 90948752}
+  - component: {fileID: 90948751}
+  m_Layer: 0
+  m_Name: InventoryManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &90948751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 90948750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaef4c3872b92df4bba82f28c3a484fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &90948752
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 90948750}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.25361, y: 0.54049, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!224 &107098058 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 956610673652033514, guid: 3ad48074b02ea2744bcda5bbc608ab0b, type: 3}
@@ -951,6 +995,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: FakeInventoryItem
       objectReference: {fileID: 0}
+    - target: {fileID: 9055228347733962055, guid: 7108ea8d564c36a43affc5c5fafa3684, type: 3}
+      propertyPath: item
+      value: 
+      objectReference: {fileID: 11400000, guid: 56de7bfcfe22d164b8903ceb215c4506, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1535,6 +1583,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: FakeInventoryItem
       objectReference: {fileID: 0}
+    - target: {fileID: 9055228347733962055, guid: 7108ea8d564c36a43affc5c5fafa3684, type: 3}
+      propertyPath: item
+      value: 
+      objectReference: {fileID: 11400000, guid: 712e2aa40588a0746b851e4679287185, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3011,3 +3063,4 @@ SceneRoots:
   - {fileID: 333501186}
   - {fileID: 1706855161}
   - {fileID: 1287197943}
+  - {fileID: 90948752}
