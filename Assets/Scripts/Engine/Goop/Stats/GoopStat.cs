@@ -42,8 +42,8 @@ namespace GoopGame.Engine
                 if (Value < _data.LessThanThreshold)
                     return 1;
                 if (Value > _data.GreaterThanThreshold)
-                    return 2;
-                return 3;
+                    return 3;
+                return 2;
             }
         }
     }
