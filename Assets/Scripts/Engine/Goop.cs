@@ -13,6 +13,8 @@ namespace GoopGame.Engine
         /// </summary>
         public GoopStats Stats { get; private set; }
 
+        public GoopTraits Traits { get; private set; }
+
         /// <summary>
         /// Current FSM state.
         /// </summary>
