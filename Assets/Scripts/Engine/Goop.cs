@@ -8,6 +8,11 @@ namespace GoopGame.Engine
         [SerializeField]
         private GoopStatData _hungerData, _temperatureData, _moodData, _energyData;
 
+        [SerializeField]
+        private GoopTrait<float> _sizeData, _speedData;
+        [SerializeField]
+        private GoopTrait<Color> _colorData;
+
         /// <summary>
         /// The mutable stats of a goop instance.
         /// </summary>

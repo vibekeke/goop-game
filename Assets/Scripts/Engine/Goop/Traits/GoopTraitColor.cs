@@ -3,36 +3,36 @@ using UnityEngine;
 
 namespace GoopGame.Engine
 {
-    public class GoopTraitScalar : GoopTrait<float>
+    public class GoopTraitColor : GoopTrait<Color>
     {
-        public GoopTraitScalar(GoopTraitDataScalar data)
+        public GoopTraitColor(GoopTraitDataColor data)
         {
             TraitData = data;
             Value = GenerateInitialValue();
         }
 
-        public GoopTraitScalar(GoopTraitDataScalar data, float value)
+        public GoopTraitColor(GoopTraitDataColor data, Color value)
         {
             TraitData = data;
             Value = value;
         }
 
-        protected override float GenerateInitialValue()
+        protected override Color GenerateInitialValue()
         {
             return TraitData.GenerateRandomValue();
         }
 
-        public override float GenerateCombineValue(Goop goop1, Goop goop2)
+        public override Color GenerateCombineValue(Goop goop1, Goop goop2)
         {
             GoopWeightStruct struct1 = GoopTraits.GetWeightStruct(goop1);
             GoopWeightStruct struct2 = GoopTraits.GetWeightStruct(goop2);
 
-            float value2 = struct2.GetFloat(Type);
+            Color value2 = struct2.GetColor(Type);
 
             return TraitData.GenerateCombineValue(Value, value2, struct1, struct2);
         }
 
-        public override (float, float) GenerateSplitValue(Goop goop)
+        public override (Color, Color) GenerateSplitValue(Goop goop)
         {
             return TraitData.GenerateSplitValues(
                 Value,
