@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c9aea45fce3247441aede20abd5453f7, type: 3}
-  m_Name: SizeTrait
+  m_Name: SpeedTrait
   m_EditorClassIdentifier: 
   DefaultValue: 5
   TraitType: 103
@@ -49,7 +49,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   EvolutionWeights:
-  - BiasTarget: 100
+  - BiasTarget: 1
     MaximumBiasIntensity: 1
     BiasIntensityProbability:
       serializedVersion: 2
@@ -76,8 +76,8 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     Weights:
-    - Type: 65
-      FloatWeight: {fileID: 11400000, guid: 0ac9b97dbdc8c774eb9df8c863fecd3b, type: 2}
+    - Type: 103
+      FloatWeight: {fileID: 11400000, guid: bed1eba60dd9aab429196151dc4f8195, type: 2}
       ColorWeight: {fileID: 0}
   DefaultLowerBound: 3
   DefaultUpperBound: 7
