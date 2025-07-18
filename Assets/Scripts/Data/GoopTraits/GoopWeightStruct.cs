@@ -13,6 +13,18 @@ namespace GoopGame.Data
         public float Speed;
         public Color Color;
 
+        public GoopWeightStruct(GoopWeightStruct struct1, GoopWeightStruct struct2, float ratio)
+        {
+            AverageHunger = Mathf.Lerp(struct1.AverageHunger, struct2.AverageHunger, ratio);
+            AverageTemperature = Mathf.Lerp(struct1.AverageTemperature, struct2.AverageTemperature, ratio);
+            AverageMood = Mathf.Lerp(struct1.AverageMood, struct2.AverageMood, ratio);
+            AverageEnergy = Mathf.Lerp(struct1.AverageEnergy, struct2.AverageEnergy, ratio);
+            Age = Mathf.Lerp(struct1.Age, struct2.Age, ratio);
+            Size = Mathf.Lerp(struct1.Size, struct2.Size, ratio);
+            Speed = Mathf.Lerp(struct1.Speed, struct2.Speed, ratio);
+            Color = Color.Lerp(struct1.Color, struct2.Color, ratio);
+        }
+
         public float GetFloat(GoopTraitWeightType type)
         {
             return type switch

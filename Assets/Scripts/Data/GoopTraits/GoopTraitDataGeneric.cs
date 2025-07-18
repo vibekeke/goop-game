@@ -59,5 +59,8 @@ namespace GoopGame.Data
 
         [Tooltip("If a bias is applied, the probability of which is determined by its weights, it overwrites any inherent evolution variance.")]
         public List<EvolutionBias> EvolutionWeights;
+
+        public abstract void ApplyBias(ref T value, EvolutionBias bias);
+        public abstract void DoMutation(ref T value);
     }
 }

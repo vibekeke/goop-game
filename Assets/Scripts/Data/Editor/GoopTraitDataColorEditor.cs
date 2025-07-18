@@ -15,7 +15,7 @@ namespace GoopGame.Data.Editor
             _defaultValue = serializedObject.FindProperty("DefaultValue");
             _defaultProbability = serializedObject.FindProperty("DefaultColors");
             _mutationRange = serializedObject.FindProperty("MutationRange");
-            _mutationProbability = serializedObject.FindProperty("MutationProbability");
+            _mutationProbability = serializedObject.FindProperty("MutationRangeProbability");
             _parentsLerp = serializedObject.FindProperty("ParentsLerpProbability");
             _evolutionWeights = serializedObject.FindProperty("EvolutionWeights");
         }
