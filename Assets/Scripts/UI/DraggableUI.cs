@@ -47,7 +47,7 @@ namespace GoopGame.UI
             Vector3 mouseScreenPos = Input.mousePosition;
 
             //Access a cached camera field, since calling Camera.main each frame incurs overhead.
-            Vector3 mouseWorldPos = GlobalManager.Camera.WorldToScreenPoint(mouseScreenPos);
+            Vector3 mouseWorldPos = GlobalManager.Camera.ScreenToWorldPoint(mouseScreenPos);
             //Set the z position to be equal to the canvas (root object),
             //since it already was a child of the canvas, the z position remains the same.
             mouseWorldPos.z = _root.position.z;
