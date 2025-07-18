@@ -1,3 +1,4 @@
+using GoopGame.Utility;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,6 +29,7 @@ namespace GoopGame.Data
     {
         public T DefaultValue;
         public GoopTraitWeightType TraitType;
+        public ProbabilityCurve ParentsLerpProbability;
         public abstract T GenerateRandomValue();
         public abstract (T, T) GenerateSplitValues(T value, GoopWeightStruct weights);
         public abstract T GenerateCombineValue(T value1, T value2, GoopWeightStruct weights1, GoopWeightStruct weights2);

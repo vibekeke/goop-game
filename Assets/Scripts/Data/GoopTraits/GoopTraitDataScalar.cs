@@ -11,11 +11,16 @@ namespace GoopGame.Data
         public ProbabilityCurve DefaultBoundsProbability;
         public float MutationRange;
         public ProbabilityCurve MutationRangeProbability;
-        public ProbabilityCurve ParentsLerpProbability;
 
         public override float GenerateRandomValue()
         {
-            throw new System.NotImplementedException();
+            return Mathf.Lerp(
+                DefaultLowerBound, 
+                DefaultUpperBound, 
+                DefaultBoundsProbability.GetValue(
+                    Random.Range(0f,1f)
+                    )
+                );
         }
 
         public override (float, float) GenerateSplitValues(float value, GoopWeightStruct weights)
