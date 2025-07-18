@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -11,12 +10,14 @@ public class InventorySlot : MonoBehaviour, IDropHandler
         /// </summary>
         public void OnDrop(PointerEventData eventData)
         {
+            //If there is not item in this slot:
             if (transform.childCount == 0)
             {
                 GameObject dropped = eventData.pointerDrag;
-                DraggableUI draggable = dropped.GetComponent<DraggableUI>(); //Gets the item script
-                draggable.parentAfterDrag = transform; //Sets the items parent to self
+                DraggableUI draggable = dropped.GetComponent<DraggableUI>();    //Gets the item script
+                draggable.ParentAfterDrag = transform;                          //Sets the items parent to self
             }
+            //If there is an item, swap them:
             else
             {
                 GameObject dropped = eventData.pointerDrag;
@@ -25,10 +26,11 @@ public class InventorySlot : MonoBehaviour, IDropHandler
                 GameObject current = transform.GetChild(0).gameObject;
                 DraggableUI currentDraggable = current.GetComponent<DraggableUI>();
 
-                currentDraggable.transform.SetParent(droppedDraggable.parentAfterDrag);
+                //Set the previous item's parent field to the dropped item to swap them.
+                currentDraggable.transform.SetParent(droppedDraggable.ParentAfterDrag);
                 currentDraggable.transform.localPosition = Vector3.zero;
 
-                droppedDraggable.parentAfterDrag = transform;
+                droppedDraggable.ParentAfterDrag = transform;
             }
             //TODO: Add logic for stackable items (should probably call an InventoryManager)
         }
