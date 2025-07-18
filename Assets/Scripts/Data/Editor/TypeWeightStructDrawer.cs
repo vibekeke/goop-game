@@ -18,6 +18,12 @@ namespace GoopGame.Data.Editor
                 weightProperty = property.FindPropertyRelative("ColorWeight");
             else if ((GoopTraitWeightType.IsFloat & flag) != 0)
                 weightProperty = property.FindPropertyRelative("FloatWeight");
+            else if (flag == GoopTraitWeightType.None)
+            {
+                EditorGUI.PropertyField(position, typeProperty, GUIContent.none);
+                EditorGUI.EndProperty();
+                return;
+            }
             else
             {
                 EditorGUI.PropertyField(position, typeProperty, GUIContent.none);
