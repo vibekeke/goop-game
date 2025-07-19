@@ -140,7 +140,7 @@ MonoBehaviour:
     m_NumColorKeys: 8
     m_NumAlphaKeys: 2
   MutationRange: 0.5
-  MutationProbability:
+  MutationRangeProbability:
     Curve:
       serializedVersion: 2
       m_Curve:
