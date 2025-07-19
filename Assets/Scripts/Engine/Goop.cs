@@ -7,11 +7,10 @@ namespace GoopGame.Engine
     {
         [SerializeField]
         private GoopStatData _hungerData, _temperatureData, _moodData, _energyData;
-
         [SerializeField]
-        private GoopTrait<float> _sizeData, _speedData;
+        private GoopTraitDataScalar _sizeData, _speedData;
         [SerializeField]
-        private GoopTrait<Color> _colorData;
+        private GoopTraitDataColor _colorData;
 
         /// <summary>
         /// The mutable stats of a goop instance.
@@ -26,6 +25,8 @@ namespace GoopGame.Engine
         [field: SerializeField]
         public BaseState State { get; private set; }
 
+        private bool _initialized = false;
+
         public void SetState(BaseState state)
         {
             State.ExitState(this); // Exit the current state
@@ -33,12 +34,25 @@ namespace GoopGame.Engine
             State.EnterState(this); // Enter the new state
         }
 
-        private void Awake()
+        public void Initialize(bool generateNewValues = false)
         {
             Stats = new GoopStats(_hungerData, _temperatureData, _moodData, _energyData);
 
+            if (generateNewValues)
+                Traits = new GoopTraits(_sizeData, _speedData, _colorData);
+
+            _initialized = true;
+
             if (State != null)
                 State.EnterState(this);
+        }
+
+        private void Start()
+        {
+            if (_initialized)
+                return;
+
+            Initialize(true);
         }
 
         private void Update()
