@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace GoopGame.Data
 {
+    /// <summary>
+    /// Color implementation of <seealso cref="GoopTraitEvolutionWeight{T}"/>
+    /// </summary>
     [Serializable]
     [CreateAssetMenu(
         fileName = "GoopTraitColorWeight", 
@@ -13,14 +16,12 @@ namespace GoopGame.Data
     {
         public override float GetWeight(Color origin)
         {
-            Vector3 originVector = 
-                new Vector3(origin.r, origin.g, origin.b);
-            Vector3 targetVector = 
-                new Vector3(Target.r, Target.g, Target.b);
+            //Get delta
+            Color delta = Target - origin;
 
             return TargetClosenessToProbability.Evaluate(
                 1 - Mathf.Clamp01(
-                    (targetVector - originVector).magnitude / MaxDistance)
+                    GoopTraitDataColor.ColorMagnitude(delta) / MaxDistance)
                 );
         }
     }

@@ -2,6 +2,12 @@ using UnityEngine;
 
 namespace GoopGame.Data
 {
+    /// <summary>
+    /// Struct generated to store a snapshot of a goop's state during
+    /// the moment of generating a new goop.
+    /// Is a struct since it contains value-types, is never changed and
+    /// is swiftly discarded after creation.
+    /// </summary>
     public struct GoopWeightStruct
     {
         public float AverageHunger;
@@ -13,6 +19,10 @@ namespace GoopGame.Data
         public float Speed;
         public Color Color;
 
+        /// <summary>
+        /// Constructor to combine two weight structs based on a given 
+        /// lerp value.
+        /// </summary>
         public GoopWeightStruct(GoopWeightStruct struct1, 
             GoopWeightStruct struct2, float ratio
             )
@@ -35,6 +45,9 @@ namespace GoopGame.Data
             Color = Color.Lerp(struct1.Color, struct2.Color, ratio);
         }
 
+        /// <summary>
+        /// Gets the relevant float given a specific type.
+        /// </summary>
         public float GetFloat(GoopTraitWeightType type)
         {
             return type switch
@@ -52,6 +65,9 @@ namespace GoopGame.Data
             };
         }
 
+        /// <summary>
+        /// Gets the relevant color gives a specific type.
+        /// </summary>
         public Color GetColor(GoopTraitWeightType type)
         {
             return type switch

@@ -3,12 +3,16 @@ using UnityEditor;
 
 namespace GoopGame.Data.Editor
 {
+    /// <summary>
+    /// Custom editor for color trait ScriptableObject.
+    /// </summary>
     [CustomEditor(typeof(GoopTraitDataColor))]
     public class GoopTraitDataColorEditor : UnityEditor.Editor
     {
         private SerializedProperty _type, _defaultValue, _defaultProbability, _mutationRange,
             _mutationProbability, _parentsLerp, _evolutionWeights;
 
+        //Assign values
         private void OnEnable()
         {
             _type = serializedObject.FindProperty("TraitType");
@@ -41,12 +45,16 @@ namespace GoopGame.Data.Editor
 
             EditorGUILayout.Space();
             
+            //Show default values
             GUILayout.Label("Default value if not generated:");
             EditorGUILayout.PropertyField(_defaultValue, label: GUIContent.none);
 
+            //Show gradient
             GUILayout.Label("Randomly generated default value:");
             EditorGUILayout.PropertyField(_defaultProbability, label: GUIContent.none, GUILayout.Height(60));
 
+
+            //Show mutation values
             EditorGUILayout.Space();
             GUILayout.Label("Mutation");
 
@@ -61,11 +69,13 @@ namespace GoopGame.Data.Editor
 
             EditorGUILayout.Space();
 
+            //Show parent blend 
             GUILayout.Label("Parent blend probability");
             EditorGUILayout.PropertyField(_parentsLerp, label: GUIContent.none, GUILayout.Height(60));
 
             EditorGUILayout.Space();
 
+            //Bias list
             GUILayout.Label("Evolution bias:\n" +
                 "If bias is active add a value after mutation is calculated.\n" +
                 "The value is the delta between current value and Bias Target,\n" +

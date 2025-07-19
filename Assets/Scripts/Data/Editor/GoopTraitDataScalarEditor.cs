@@ -3,6 +3,9 @@ using UnityEditor;
 
 namespace GoopGame.Data.Editor
 {
+    /// <summary>
+    /// Custom editor for float trait ScriptableObject
+    /// </summary>
     [CustomEditor(typeof(GoopTraitDataScalar))]
     public class GoopTraitDataScalarEditor : UnityEditor.Editor
     {
@@ -10,6 +13,7 @@ namespace GoopGame.Data.Editor
             _defaultProbability, _mutationRange, _mutationProbability, _parentsLerp,
             _evolutionWeights;
 
+        //Assigne values
         private void OnEnable()
         {
             _type = serializedObject.FindProperty("TraitType");
@@ -42,6 +46,7 @@ namespace GoopGame.Data.Editor
             }
 #pragma warning restore CS0612 // Type or member is obsolete
 
+            //Show default values.
             EditorGUILayout.Space();
             GUILayout.Label("Default values");
 
@@ -63,6 +68,7 @@ namespace GoopGame.Data.Editor
             GUILayout.Label("Default value probability within bounds");
             EditorGUILayout.PropertyField(_defaultProbability, label: GUIContent.none, GUILayout.Height(60));
 
+            //Show mutation values.
             EditorGUILayout.Space();
             GUILayout.Label("Mutation");
 
@@ -77,11 +83,13 @@ namespace GoopGame.Data.Editor
 
             EditorGUILayout.Space();
 
+            //Show parent blend.
             GUILayout.Label("Parent blend probability");
             EditorGUILayout.PropertyField(_parentsLerp, label: GUIContent.none, GUILayout.Height(60));
 
             EditorGUILayout.Space();
 
+            //Evolution biases.
             GUILayout.Label("Evolution bias:\n" +
                 "If bias is active add a value after mutation is calculated.\n" +
                 "The value is the delta between current value and Bias Target,\n" +

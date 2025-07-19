@@ -3,15 +3,22 @@ using UnityEngine;
 
 namespace GoopGame.Data.Editor
 {
-    [CustomPropertyDrawer(typeof(TypeWeightStruct))]
+    /// <summary>
+    /// Custom property drawer for <seealso cref="TypeWeightPair"/>.
+    /// </summary>
+    [CustomPropertyDrawer(typeof(TypeWeightPair))]
     public class TypeWeightStructDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+            //Begin property.
             EditorGUI.BeginProperty(position, label, property);
 
+            //Get type.
             SerializedProperty typeProperty = property.FindPropertyRelative("Type");
             SerializedProperty weightProperty;
+
+            //Fetch correct data type based on flag from type.
             GoopTraitWeightType flag = (GoopTraitWeightType)typeProperty.enumValueFlag;
 #pragma warning disable CS0612 // Type or member is obsolete
             if ((GoopTraitWeightType.IsColor & flag) != 0)
@@ -20,6 +27,7 @@ namespace GoopGame.Data.Editor
                 weightProperty = property.FindPropertyRelative("FloatWeight");
             else if (flag == GoopTraitWeightType.None)
             {
+                //Do not throw error on none, but still exit properly.
                 EditorGUI.PropertyField(position, typeProperty, GUIContent.none);
                 EditorGUI.EndProperty();
                 return;

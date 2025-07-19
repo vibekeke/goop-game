@@ -3,8 +3,14 @@ using GoopGame.Data;
 
 namespace GoopGame.Engine
 {
+    /// <summary>
+    /// Responsible for storing and arranging runtime traits for goops.
+    /// </summary>
     public class GoopTraits
     {
+        /// <summary>
+        /// Constructor for a completely random goop.
+        /// </summary>
         public GoopTraits(
             GoopTraitDataScalar sizeData,
             GoopTraitDataScalar speedData,
@@ -16,6 +22,10 @@ namespace GoopGame.Engine
             Color = new GoopTraitColor(colorData);
         }
 
+        /// <summary>
+        /// Constructor for a goop with specific traits. Requires an 
+        /// existing GoopTraits reference to fetch relevant TraitData.
+        /// </summary>
         public GoopTraits(GoopTraits traits, float size, float speed, Color color)
         {
             Size = new GoopTraitScalar((GoopTraitDataScalar)traits.Size.TraitData, size);
@@ -27,6 +37,9 @@ namespace GoopGame.Engine
         public GoopTraitScalar Speed { get; private set; }
         public GoopTraitColor Color { get; private set; }
 
+        /// <summary>
+        /// Get the data relevant for evolution weights from a goop.
+        /// </summary>
         public static GoopWeightStruct GetWeightStruct(Goop goop)
         {
             return new GoopWeightStruct()
@@ -42,6 +55,9 @@ namespace GoopGame.Engine
             };
         }
 
+        /// <summary>
+        /// Create two GoopTraits by fetching split values from all fields.
+        /// </summary>
         public static (GoopTraits, GoopTraits) GetGoopTraitsFromSplit(Goop goop)
         {
             (float size1, float size2) = goop.Traits.Size.GenerateSplitValue(goop);
@@ -54,6 +70,9 @@ namespace GoopGame.Engine
                 );
         }
 
+        /// <summary>
+        /// Create a GoopTrait by fetching combine values from all fields.
+        /// </summary>
         public static GoopTraits GetGoopTraitsFromCombine(Goop goop1, Goop goop2)
         {
             float size = goop1.Traits.Size.GenerateCombineValue(goop1, goop2);

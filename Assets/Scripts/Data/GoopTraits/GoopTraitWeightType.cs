@@ -2,9 +2,17 @@ using System;
 
 namespace GoopGame.Data
 {
+    /// <summary>
+    /// Enum to track any value relevant to trait weights.
+    /// This includes traits themselves.
+    /// Setup with bitflag values to quickly compare and assign different
+    /// categories.
+    /// </summary>
     public enum GoopTraitWeightType
     {
         None = 0,
+
+        //suppress warnings due to [Obsolete]
 #pragma warning disable CS0612 // Type or member is obsolete
         AverageHunger = 1 | IsFloat,
         AverageTemperature = 2 | IsFloat,
@@ -20,6 +28,11 @@ namespace GoopGame.Data
         UniqueTraits = 12 | IsTrait,
 #pragma warning restore CS0612 // Type or member is obsolete
 
+        //First flag is bit-shifted by 5 bits.
+        //Bits 0-4 are dedicated to index of enums above (Up to 31).
+
+        //[Obsolete] attribute is to hide this enum in the Unity Inspector.
+        //requires us to suppress warnings in code.
         [Obsolete]
         IsTrait = 1 << 5,
         [Obsolete]

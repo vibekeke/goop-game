@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace GoopGame.Data
 {
+    /// <summary>
+    /// Float implementation of <seealso cref="GoopTraitEvolutionWeight{T}"/>
+    /// </summary>
     [Serializable]
     [CreateAssetMenu(
         fileName = "GoopTraitFloatWeight",

@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace GoopGame.Engine
 {
+    /// <summary>
+    /// Float implementation of <seealso cref="GoopTrait{T}"/>
+    /// </summary>
     public class GoopTraitScalar : GoopTrait<float>
     {
         public GoopTraitScalar(GoopTraitDataScalar data)
@@ -24,9 +27,11 @@ namespace GoopGame.Engine
 
         public override float GenerateCombineValue(Goop goop1, Goop goop2)
         {
+            //Get weights
             GoopWeightStruct struct1 = GoopTraits.GetWeightStruct(goop1);
             GoopWeightStruct struct2 = GoopTraits.GetWeightStruct(goop2);
 
+            //Get float from other goop
             float value2 = struct2.GetFloat(Type);
 
             return TraitData.GenerateCombineValue(Value, value2, struct1, struct2);
