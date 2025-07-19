@@ -170,6 +170,10 @@ namespace GoopGame.Data
         {
             float magnitude = ColorMagnitude(color);
 
+            //Avoid NaN error
+            if (magnitude == 0f)
+                return new Color(0f, 0f, 0f, 0f);
+
             return new Color(
                 color.r / magnitude, color.g / magnitude,
                 color.b / magnitude, color.a / magnitude
