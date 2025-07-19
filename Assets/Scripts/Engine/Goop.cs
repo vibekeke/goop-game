@@ -6,7 +6,8 @@ namespace GoopGame.Engine
     public class Goop : MonoBehaviour
     {
         [SerializeField]
-        private GoopStatData _hungerData, _temperatureData, _moodData, _energyData;
+        private GoopStatData _hungerData, _temperatureData, 
+            _moodData, _energyData;
         [SerializeField]
         private GoopTraitDataScalar _sizeData, _speedData;
         [SerializeField]
@@ -36,10 +37,12 @@ namespace GoopGame.Engine
 
         public void Initialize(bool generateNewValues = false)
         {
-            Stats = new GoopStats(_hungerData, _temperatureData, _moodData, _energyData);
+            Stats = new GoopStats(_hungerData, _temperatureData, 
+                _moodData, _energyData);
 
             if (generateNewValues)
-                Traits = new GoopTraits(_sizeData, _speedData, _colorData);
+                Traits = new GoopTraits(_sizeData, _speedData,
+                    _colorData);
 
             _initialized = true;
 

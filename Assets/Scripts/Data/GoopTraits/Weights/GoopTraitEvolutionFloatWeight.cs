@@ -4,8 +4,12 @@ using UnityEngine;
 namespace GoopGame.Data
 {
     [Serializable]
-    [CreateAssetMenu(fileName = "GoopTraitFloatWeight", menuName = "GoopGame/Goops/Traits/Create new Trait Float Weight")]
-    public class GoopTraitEvolutionFloatWeight : GoopTraitEvolutionWeight<float>
+    [CreateAssetMenu(
+        fileName = "GoopTraitFloatWeight",
+        menuName = "GoopGame/Goops/Traits/Create new Trait Float Weight"
+        )]
+    public class GoopTraitEvolutionFloatWeight : 
+        GoopTraitEvolutionWeight<float>
     {
         public override float GetWeight(float origin)
         {

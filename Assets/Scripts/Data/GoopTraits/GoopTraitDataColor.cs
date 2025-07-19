@@ -3,7 +3,10 @@ using UnityEngine;
 
 namespace GoopGame.Data
 {
-    [CreateAssetMenu(fileName = "GoopColorTrait", menuName = "GoopGame/Goops/Traits/Create new Goop Color Trait")]
+    [CreateAssetMenu(
+        fileName = "GoopColorTrait", 
+        menuName = "GoopGame/Goops/Traits/Create new Goop Color Trait"
+        )]
     public class GoopTraitDataColor : GoopTraitData<Color>
     {
         public Gradient DefaultColors;
@@ -15,12 +18,19 @@ namespace GoopGame.Data
             return DefaultColors.Evaluate(Random.Range(0f, 1f));
         }
 
-        public override Color GenerateCombineValue(Color value1, Color value2, GoopWeightStruct weights1, GoopWeightStruct weights2)
+        public override Color GenerateCombineValue(Color value1, 
+            Color value2, GoopWeightStruct weights1, 
+            GoopWeightStruct weights2
+            )
         {
-            float parentCombinationRatio = ParentsLerpProbability.GetValue(Random.Range(0f, 1f));
-            Color delta = NormalizeColor(value2 - value1) * parentCombinationRatio;
+            float parentCombinationRatio = 
+                ParentsLerpProbability.GetValue(Random.Range(0f, 1f));
+            Color delta = 
+                NormalizeColor(value2 - value1) * parentCombinationRatio;
             Color combinedValue = value1 + delta;
-            GoopWeightStruct combinedStruct = new GoopWeightStruct(weights1, weights2, parentCombinationRatio);
+            GoopWeightStruct combinedStruct = new GoopWeightStruct(
+                weights1, weights2, parentCombinationRatio
+                );
 
             foreach (var bias in EvolutionWeights)
             {
@@ -33,7 +43,9 @@ namespace GoopGame.Data
             return combinedValue;
         }
 
-        public override (Color, Color) GenerateSplitValues(Color value, GoopWeightStruct weights)
+        public override (Color, Color) GenerateSplitValues(Color value, 
+            GoopWeightStruct weights
+            )
         {
             Color value1 = value;
             Color value2 = value;
@@ -58,14 +70,20 @@ namespace GoopGame.Data
             float magnitude = ColorMagnitude(delta);
             delta = NormalizeColor(delta) * 
                 Mathf.Min(magnitude, MutationRange) * 
-                bias.BiasIntensityProbability.Evaluate(Random.Range(0f, 1f));
+                bias.BiasIntensityProbability.Evaluate(
+                    Random.Range(0f, 1f)
+                    );
             value += delta;
         }
 
         public override void DoMutation(ref Color value)
         {
-            float mutationIntensity = MutationRangeProbability.GetValue(Random.Range(0f, 1f));
-            float mutation = Mathf.Lerp(0f, MutationRange, mutationIntensity);
+            float mutationIntensity = MutationRangeProbability.GetValue(
+                Random.Range(0f, 1f)
+                );
+            float mutation = Mathf.Lerp(
+                0f, MutationRange, mutationIntensity
+                );
             Color target = GenerateRandomValue();
 
             Color delta = NormalizeColor(target - value);

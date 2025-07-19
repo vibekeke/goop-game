@@ -3,7 +3,10 @@ using UnityEngine;
 
 namespace GoopGame.Data
 {
-    [CreateAssetMenu(fileName = "GoopScalarTrait", menuName = "GoopGame/Goops/Traits/Create new Goop Scalar Trait")]
+    [CreateAssetMenu(
+        fileName = "GoopScalarTrait", 
+        menuName = "GoopGame/Goops/Traits/Create new Goop Scalar Trait"
+        )]
     public class GoopTraitDataScalar : GoopTraitData<float>
     {
         public float DefaultLowerBound;
@@ -23,11 +26,19 @@ namespace GoopGame.Data
                 );
         }
 
-        public override float GenerateCombineValue(float value1, float value2, GoopWeightStruct weights1, GoopWeightStruct weights2)
+        public override float GenerateCombineValue(
+            float value1, float value2, GoopWeightStruct weights1, 
+            GoopWeightStruct weights2
+            )
         {
-            float parentCombinationRatio = ParentsLerpProbability.GetValue(Random.Range(0f, 1f));
-            float combinedValue = Mathf.Lerp(value1, value2, parentCombinationRatio);
-            GoopWeightStruct combinedStruct = new GoopWeightStruct(weights1, weights2, parentCombinationRatio);
+            float parentCombinationRatio = 
+                ParentsLerpProbability.GetValue(Random.Range(0f, 1f));
+            float combinedValue = Mathf.Lerp(
+                value1, value2, parentCombinationRatio
+                );
+            GoopWeightStruct combinedStruct = new GoopWeightStruct(
+                weights1, weights2, parentCombinationRatio
+                );
 
             foreach (var bias in EvolutionWeights)
             {
@@ -40,7 +51,9 @@ namespace GoopGame.Data
             return combinedValue;
         }
 
-        public override (float, float) GenerateSplitValues(float value, GoopWeightStruct weights)
+        public override (float, float) GenerateSplitValues(
+            float value, GoopWeightStruct weights
+            )
         {
             float value1 = value;
             float value2 = value;
@@ -62,15 +75,22 @@ namespace GoopGame.Data
         public override void ApplyBias(ref float value, EvolutionBias bias)
         {
             float delta = bias.BiasTarget - value;
-            delta = Mathf.Clamp(delta, -bias.MaximumBiasIntensity, bias.MaximumBiasIntensity);
-            delta = Mathf.Lerp(0f, delta, bias.BiasIntensityProbability.Evaluate(Random.Range(0f, 1f)));
+            delta = Mathf.Clamp(
+                delta, -bias.MaximumBiasIntensity, bias.MaximumBiasIntensity
+                );
+            delta = Mathf.Lerp(
+                0f, delta, 
+                bias.BiasIntensityProbability.Evaluate(Random.Range(0f, 1f))
+                );
             value += delta;
         }
 
         public override void DoMutation(ref float value)
         {
-            float mutationIntensity = MutationRangeProbability.GetValue(Random.Range(0f, 1f));
-            float mutation = Mathf.Lerp(0f, MutationRange, mutationIntensity);
+            float mutationIntensity = 
+                MutationRangeProbability.GetValue(Random.Range(0f, 1f));
+            float mutation = 
+                Mathf.Lerp(0f, MutationRange, mutationIntensity);
             value += mutation;
         }
     }
