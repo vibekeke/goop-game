@@ -35,12 +35,17 @@ namespace GoopGame.Engine
             State.EnterState(this); // Enter the new state
         }
 
-        public void Initialize(bool generateNewValues = false)
+        public void SetTraits(GoopTraits traits)
+        {
+            Traits = traits;
+        }
+
+        public void Initialize()
         {
             Stats = new GoopStats(_hungerData, _temperatureData, 
                 _moodData, _energyData);
 
-            if (generateNewValues)
+            if (Traits == null)
                 Traits = new GoopTraits(_sizeData, _speedData,
                     _colorData);
 
@@ -55,7 +60,7 @@ namespace GoopGame.Engine
             if (_initialized)
                 return;
 
-            Initialize(true);
+            Initialize();
         }
 
         private void Update()
