@@ -1905,10 +1905,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1269890349}
     m_Modifications:
-    - target: {fileID: 4082520840422128168, guid: ffde47080573c1440a1c9b5322a7a9d4, type: 3}
-      propertyPath: m_Sprite
+    - target: {fileID: 2808681258910546380, guid: ffde47080573c1440a1c9b5322a7a9d4, type: 3}
+      propertyPath: itemData
       value: 
-      objectReference: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+      objectReference: {fileID: 11400000, guid: 22165ca86f5dd4e8b85187d15c775f96, type: 2}
     - target: {fileID: 7427794587711173211, guid: ffde47080573c1440a1c9b5322a7a9d4, type: 3}
       propertyPath: m_Name
       value: InventoryItem
@@ -2006,6 +2006,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 334075274}
     m_Modifications:
+    - target: {fileID: 2808681258910546380, guid: ffde47080573c1440a1c9b5322a7a9d4, type: 3}
+      propertyPath: itemData
+      value: 
+      objectReference: {fileID: 11400000, guid: 318f429d67bf7488087eb95e5a342479, type: 2}
     - target: {fileID: 7427794587711173211, guid: ffde47080573c1440a1c9b5322a7a9d4, type: 3}
       propertyPath: m_Name
       value: InventoryItem
