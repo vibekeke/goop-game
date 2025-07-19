@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ce7340ec623547bf90c0dd58ad41dba, type: 3}
   m_Name: TestItemData
   m_EditorClassIdentifier: 
-  icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  type: 0
-  description: This is a cool item with no prefab
-  stackable: 0
-  worldPrefab: {fileID: 0}
+  Icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  Description: 
+  Type: 0
+  Stackable: 0
+  WorldPrefab: {fileID: 0}
