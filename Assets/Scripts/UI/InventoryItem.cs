@@ -27,17 +27,22 @@ namespace GoopGame.UI
         public int amount = 1;
 
 
-        public void Start()
+        public void Init()
         {
+            //TODO: Use Parameter to fetch the correct InventoryEntry
+            //itemData = entry.recipe;
+            //amount = entry.amount;
             UpdateUI();
         }
 
         //Updates all of the visual elements in the InventoryItem gameobject to match ItemData recipe.
         public void UpdateUI()
         {
-            _image.sprite = itemData.icon;
-            _amountText.text = amount.ToString();
-        }
+            _image.sprite = itemData.Icon;
 
+            //Set the amountText to current amount, or empty string if theres only 1 of the item
+            _amountText.text = amount > 1 ? amount.ToString() : string.Empty;
+
+        }
     }
 }

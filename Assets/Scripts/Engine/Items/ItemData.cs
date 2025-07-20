@@ -9,17 +9,17 @@ namespace GoopGame.Engine
     public class ItemData : ScriptableObject
     {
         [Header("UI information")]
-        public Sprite icon;             //item icon to be displayed in the inventory UI
+        public Sprite Icon;             //item icon to be displayed in the inventory UI
 
-        public string description;      //description of the item to be displayed in the UI
+        public string Description;      //description of the item to be displayed in the UI
 
         [Header("Gameplay and logic")]
 
-        public ItemType type;           //item type for sorting purposes.
+        public ItemType Type;           //item type for sorting purposes.
 
-        public bool stackable;
+        public bool Stackable;
 
-        public GameObject worldPrefab;  //prefab for gameobject that can be placed into the world/terrarium
+        public GameObject WorldPrefab;  //prefab for gameobject that can be placed into the world/terrarium
 
     }
 
