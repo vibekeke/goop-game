@@ -21,7 +21,10 @@ namespace GoopGame.Engine
             _temperature = new GoopStat(temperature);
             _mood = new GoopStat(mood);
             _energy = new GoopStat(energy);
+            Age = 0f;
         }
+
+        public float Age;
 
         /// <summary>
         /// The stat objects are set to private, as the only elements relevant
