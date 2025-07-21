@@ -1,4 +1,5 @@
 using UnityEngine;
+using GoopGame.Data;
 
 namespace GoopGame.Engine
 {

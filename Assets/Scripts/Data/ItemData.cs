@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace GoopGame.Engine
+namespace GoopGame.Data
 {
     /// <summary>
     /// 'Recipe' for initializing a given item into the inventory, and what gameobject it can spawn into the world.

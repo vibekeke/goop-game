@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-using GoopGame.Engine;
+using GoopGame.Data;
 using TMPro;
 
 namespace GoopGame.UI
@@ -27,7 +27,7 @@ namespace GoopGame.UI
         public int amount = 1;
 
 
-        public void Init()
+        public void Start() //TODO: Change to Init()
         {
             //TODO: Use Parameter to fetch the correct InventoryEntry
             //itemData = entry.recipe;
