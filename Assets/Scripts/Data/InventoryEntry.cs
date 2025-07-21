@@ -1,7 +1,6 @@
 using UnityEngine;
-using GoopGame.Data;
 
-namespace GoopGame.Engine
+namespace GoopGame.Data
 {
 
     /// <summary>
@@ -11,9 +10,9 @@ namespace GoopGame.Engine
     [System.Serializable]
     public class InventoryEntry
     {
-        public ItemData itemData;
-        public int amount;
-        public int slotIndex;
+        public ItemData Item;
+        public int Amount;
+        public int SlotIndex;
 
         //TODO: If we want to be able to save "living" objects - goops, plants etc with mutable stats, we can add 
         // a variable "customData" or "itemSnapshot" here that saves the in-game variables here. 
@@ -22,9 +21,9 @@ namespace GoopGame.Engine
 
         public InventoryEntry(ItemData itemData, int amount, int slot)
         {
-            this.itemData = itemData;
-            this.amount = amount;
-            this.slotIndex = slot;
+            Item = itemData;
+            Amount = amount;
+            SlotIndex = slot;
         }
     }
 }

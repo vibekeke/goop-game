@@ -9,9 +9,11 @@ namespace GoopGame.Data
     public class ItemData : ScriptableObject
     {
         [Header("UI information")]
-        public Sprite Icon;             //item icon to be displayed in the inventory UI
-
         public string Description;      //description of the item to be displayed in the UI
+
+        public string Name;             //Item-name
+
+        public Sprite Icon;             //item icon to be displayed in the inventory UI
 
         [Header("Gameplay and logic")]
 
