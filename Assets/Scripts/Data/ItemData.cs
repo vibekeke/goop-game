@@ -21,6 +21,8 @@ namespace GoopGame.Data
 
         public bool Stackable;
 
+        public int MaxStack;
+
         public GameObject WorldPrefab;  //prefab for gameobject that can be placed into the world/terrarium
 
     }
