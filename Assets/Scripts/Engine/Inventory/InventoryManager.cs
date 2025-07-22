@@ -20,7 +20,7 @@ namespace GoopGame.Engine
         public static readonly InventoryEntry Empty = new InventoryEntry(null, 0);
 
         [SerializeField]
-        private int _slotAmount;
+        private int _slotAmount = 10;
 
 
         // --- EVENTS --- 
@@ -67,6 +67,7 @@ namespace GoopGame.Engine
                     _inventory.Add(Empty);
             }
             OnInventoryInitialized?.Invoke(_slotAmount);
+            Debug.Log($"Inventory Initialized with {_slotAmount} slots");
         }
 
         /// <summary>
@@ -87,27 +88,19 @@ namespace GoopGame.Engine
         public bool AddNewItem(ItemData itemData, int amount)
         {
 
+            //If the item is stackable, and there is space, try to merge them.
+
             InventoryEntry newEntry = new InventoryEntry(itemData, amount);
 
-            //If the item is stackable, check if the item already exists in the inventory.
-            if (itemData.Stackable)
+            if (itemData.Stackable && CanMergeStack(itemData, amount))
             {
-                int stackIndex = LookForStackableSlot(itemData);
-
-                //If the item already exists, try to stack them. If success, return true.
-                if (stackIndex != -1)
-                {
-                    var existing = _inventory[stackIndex];
-
-                    //If the desired stack exceeds the limit, keep looking for an empty slot instead.
-                    if (TryMergeStack(existing, newEntry))
-                    {
-                        Debug.Log("Item successfully stacked");
-                        OnSlotChanged?.Invoke(stackIndex, existing);
-                        return true;
-                    }
-                }
+                Debug.Log("Should have merged");
+                MergeStack(newEntry, amount);
+                PrintInventory();
+                return true;
             }
+
+            //If the item isn't stackable, just add it straight to the inventory :)
 
             //Find an empty slot
             for (int i = 0; i < _inventory.Count; i++)
@@ -116,6 +109,7 @@ namespace GoopGame.Engine
                 {
                     _inventory[i] = newEntry;                   //set to newEntry
                     OnSlotChanged?.Invoke(i, _inventory[i]);    //
+                    PrintInventory();
                     return true;
                 }
             }
@@ -125,31 +119,80 @@ namespace GoopGame.Engine
             return false;
         }
 
-        //Checks if a given itemData matches an existing entry
-        private int LookForStackableSlot(ItemData itemData)
+
+        /// <summary>
+        /// Checks to see if the two entries stacked together will exceed the inventory limit.
+        /// </summary>
+        private bool CanMergeStack(ItemData itemData, int amount)
         {
+            int StackableSpace = 0;
+            int emptySlots = 0;
+
+            //Goes through inventory and checks 
+            // (1) how many slots we have, and 
+            // (2) how many spaces are left in the existing stacks of the same itemtype.
             for (int i = 0; i < _inventory.Count; i++)
             {
                 var entry = _inventory[i];
-                if (entry != Empty && entry.Item == itemData)
-                    return i;
+
+                if (entry == Empty)
+                {
+                    emptySlots++;
+                }
+                else if (entry.Item == itemData)
+                {
+                    StackableSpace += entry.MaxStack - entry.Amount;
+                }
             }
-            return -1;
+
+            //Tallies up all of the empty space in the inventory :)
+            int TotalStackableSpace = StackableSpace + (emptySlots * itemData.MaxStack);
+            return TotalStackableSpace >= amount;
+
         }
 
-        /// <summary>
-        /// Checks to see if the two entries stacked together will exceed the max stack, and stacks them.
-        /// The logic is simple for now: It either stacks them or it doesn't.
-        /// </summary>
-        private bool TryMergeStack(InventoryEntry oldEntry, InventoryEntry newEntry)
+        //Merges the new InventoryEntry with existing stacks and empty slots
+        private void MergeStack(InventoryEntry newEntry, int amount)
         {
-            //if the items added together exceed the stack limit, return false
-            if (oldEntry.Amount + newEntry.Amount > oldEntry.GetMaxStack())
-                return false;
+            //Loop though every slot in the inventory and add amount to existing stacks.
+            for (int i = 0; i < _inventory.Count && newEntry.Amount > 0; i++)
+            {
+                var entry = _inventory[i];
 
-            //else add the amounts to the oldEntry and return :D
-            oldEntry.SetAmount(oldEntry.Amount + newEntry.Amount);
-            return true;
+                // Skip empty or mismatched items
+                if (entry == Empty || entry.Item != newEntry.Item)
+                    continue;
+
+                // If this stack is full, skip it
+                if (entry.Amount >= entry.MaxStack)
+                    continue;
+
+                // Merge as much as we can into this stack
+                int spaceLeft = entry.MaxStack - entry.Amount;
+                int toMerge = Mathf.Min(spaceLeft, newEntry.Amount);
+
+                entry.SetAmount(entry.Amount + toMerge);
+                newEntry.SetAmount(newEntry.Amount - toMerge);
+
+                OnSlotChanged?.Invoke(i, entry);
+            }
+
+            //Place new stacks of the item into the inventory, until there is nothing left.
+            for (int i = 0; i < _inventory.Count && newEntry.Amount > 0; i++)
+            {
+                if (_inventory[i] == Empty)
+                {
+                    int stackSize = Mathf.Min(newEntry.Amount, newEntry.MaxStack);
+                    _inventory[i] = new InventoryEntry(newEntry.Item, stackSize); //Will this cause wierdness??
+                    newEntry.SetAmount(newEntry.Amount - stackSize);
+                    OnSlotChanged?.Invoke(i, _inventory[i]);
+                }
+            }
+
+            if (newEntry.Amount > 0)
+            {
+                Debug.LogError($"Item merge unsuccessful: {newEntry.Amount} items were lost");
+            }
         }
 
 
@@ -171,6 +214,25 @@ namespace GoopGame.Engine
         public void TryPlaceItem(int index)
         {
             //
+        }
+
+
+        private void PrintInventory()
+        {
+            Debug.Log("Inventory contents:");
+
+            string log = "📦 Inventory: ";
+
+            for (int i = 0; i < _inventory.Count; i++)
+            {
+                var entry = _inventory[i];
+                if (entry == Empty)
+                    log += $"[{i}: Empty] ";
+                else
+                    log += $"[{i}: {entry.Item.Name} x{entry.Amount}] ";
+            }
+
+            Debug.Log(log);
         }
     }
 }
