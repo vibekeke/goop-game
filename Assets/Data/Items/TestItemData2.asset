@@ -9,11 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ce7340ec623547bf90c0dd58ad41dba, type: 3}
+  m_Script: {fileID: 11500000, guid: 34de4a1b6b1817c43a7c434e4234750d, type: 3}
   m_Name: TestItemData2
   m_EditorClassIdentifier: 
-  Icon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
   Description: 
+  Name: 
+  Icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   Type: 0
   Stackable: 0
   WorldPrefab: {fileID: 0}

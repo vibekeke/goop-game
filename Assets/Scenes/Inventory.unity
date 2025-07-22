@@ -1860,7 +1860,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2eee6b469bb7f466ab81cdc266ec42ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InventoryGrid: {fileID: 40460974}
+  _inventoryManager: {fileID: 1601149949}
+  _gridContainer: {fileID: 40460975}
+  _slotPrefab: {fileID: 4106919227066029734, guid: 924b4001aa49d6249b7b8c608dd7996e, type: 3}
+  _inventoryItemPrefab: {fileID: 7427794587711173211, guid: ffde47080573c1440a1c9b5322a7a9d4, type: 3}
 --- !u!1001 &1522352558
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1872,7 +1875,7 @@ PrefabInstance:
     - target: {fileID: 2808681258910546380, guid: ffde47080573c1440a1c9b5322a7a9d4, type: 3}
       propertyPath: itemData
       value: 
-      objectReference: {fileID: 11400000, guid: 22165ca86f5dd4e8b85187d15c775f96, type: 2}
+      objectReference: {fileID: 11400000, guid: 318f429d67bf7488087eb95e5a342479, type: 2}
     - target: {fileID: 2808681258910546380, guid: ffde47080573c1440a1c9b5322a7a9d4, type: 3}
       propertyPath: displayAmount
       value: 14
@@ -1977,7 +1980,7 @@ PrefabInstance:
     - target: {fileID: 2808681258910546380, guid: ffde47080573c1440a1c9b5322a7a9d4, type: 3}
       propertyPath: itemData
       value: 
-      objectReference: {fileID: 11400000, guid: 318f429d67bf7488087eb95e5a342479, type: 2}
+      objectReference: {fileID: 11400000, guid: 22165ca86f5dd4e8b85187d15c775f96, type: 2}
     - target: {fileID: 7427794587711173211, guid: ffde47080573c1440a1c9b5322a7a9d4, type: 3}
       propertyPath: m_Name
       value: InventoryItem
@@ -2101,6 +2104,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d504d508a79ff468caa5b0e744f08aaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _slotAmount: 0
 --- !u!4 &1601149950
 Transform:
   m_ObjectHideFlags: 0
