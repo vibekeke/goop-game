@@ -208,55 +208,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7859316287590568367, guid: 924b4001aa49d6249b7b8c608dd7996e, type: 3}
   m_PrefabInstance: {fileID: 607241535}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &76431917
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 76431919}
-  - component: {fileID: 76431918}
-  m_Layer: 5
-  m_Name: UIManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &76431918
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 76431917}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f8cf89b555fc7041b6368cb9798170f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  inventoryPanel: {fileID: 358746445}
---- !u!224 &76431919
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 76431917}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1465773975}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &161328264
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1868,6 +1819,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1465773975}
+  - component: {fileID: 1465773976}
   m_Layer: 5
   m_Name: Inventory
   m_TagString: Untagged
@@ -1888,7 +1840,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 422518123}
-  - {fileID: 76431919}
   - {fileID: 358746446}
   m_Father: {fileID: 1706855161}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1897,6 +1848,19 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1465773976
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1465773974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2eee6b469bb7f466ab81cdc266ec42ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  InventoryGrid: {fileID: 40460974}
 --- !u!1001 &1522352558
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1909,6 +1873,10 @@ PrefabInstance:
       propertyPath: itemData
       value: 
       objectReference: {fileID: 11400000, guid: 22165ca86f5dd4e8b85187d15c775f96, type: 2}
+    - target: {fileID: 2808681258910546380, guid: ffde47080573c1440a1c9b5322a7a9d4, type: 3}
+      propertyPath: displayAmount
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 7427794587711173211, guid: ffde47080573c1440a1c9b5322a7a9d4, type: 3}
       propertyPath: m_Name
       value: InventoryItem
@@ -2104,6 +2072,50 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7859316287590568367, guid: 924b4001aa49d6249b7b8c608dd7996e, type: 3}
   m_PrefabInstance: {fileID: 2047953130}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1601149948
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1601149950}
+  - component: {fileID: 1601149949}
+  m_Layer: 0
+  m_Name: InventoryManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1601149949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1601149948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d504d508a79ff468caa5b0e744f08aaf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1601149950
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1601149948}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!224 &1606385708 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7859316287590568367, guid: 924b4001aa49d6249b7b8c608dd7996e, type: 3}
@@ -2416,7 +2428,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 76431918}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: UIManager, GoopGame.UI
         m_MethodName: ToggleInventory
         m_Mode: 1
@@ -2865,3 +2877,4 @@ SceneRoots:
   - {fileID: 995403997}
   - {fileID: 1706855161}
   - {fileID: 1287197943}
+  - {fileID: 1601149950}
