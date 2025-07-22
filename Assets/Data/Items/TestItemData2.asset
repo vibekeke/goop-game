@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34de4a1b6b1817c43a7c434e4234750d, type: 3}
   m_Name: TestItemData2
   m_EditorClassIdentifier: 
-  Description: 
-  Name: 
+  Description: a stackable item
+  Name: Test Item B
   Icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   Type: 0
-  Stackable: 0
+  Stackable: 1
+  MaxStack: 22
   WorldPrefab: {fileID: 0}
