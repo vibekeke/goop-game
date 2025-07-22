@@ -5,7 +5,16 @@ namespace GoopGame.UI {
 
 public class InventorySlot : MonoBehaviour, IDropHandler
     {
+        public int slotIndex;           //Each slots knows its own index for easier communication with InventoryManager
+
+        public void Init(int index)
+        {
+            slotIndex = index;
+        }
+
         /// <summary>
+        /// WARNING: SWAPPING LOGIC WILL BE HANDLED BY INVENTORYMANAGER. Currently the visual drag and drop will
+        /// desync the item placement from the actual inventory :3 
         /// Changes the parent of the dropped element to self. Swaps items if inventory slot is already occupied.
         /// </summary>
         public void OnDrop(PointerEventData eventData)

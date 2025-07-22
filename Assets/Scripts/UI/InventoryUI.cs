@@ -16,7 +16,7 @@ namespace GoopGame.UI
     public class InventoryUI : MonoBehaviour
     {
         [SerializeField]
-        private InventoryManager _inventoryManager;
+        private InventoryManager _inventoryManager; //For listening to events only. We want dumb UI :)
         [SerializeField]
         private Transform _gridContainer;           //The grid to which we will spawn slots and items.
         [SerializeField]
@@ -24,41 +24,71 @@ namespace GoopGame.UI
         [SerializeField]
         private GameObject _inventoryItemPrefab;
 
-        private int _slotAmount;
+        private List<InventorySlot> _slots = new();
 
         void Start()
         {
             if (_inventoryManager == null)
                 Debug.LogError("InventoryManager reference not assigned in InventoryUI.");
 
-            _inventoryManager.OnInventoryInitialized += Init;
+            _inventoryManager.OnInventoryInitialized += InitSlots;
             _inventoryManager.OnInventoryChanged += UpdateAll;
             _inventoryManager.OnSlotChanged += UpdateSlot;
             _inventoryManager.OnItemRemoved += ClearSlot;
         }
 
         //Initializes the grid with a specific amount of slots.
-        public void Init(int slotAmount)
+        public void InitSlots(int slotAmount)
         {
-            _slotAmount = slotAmount;
-            //Create all the children :)
+            //Clearing out the previous stuff so we don't get dupes
+            foreach (Transform child in _gridContainer)
+                Destroy(child.gameObject);
+
+            _slots.Clear();
+
+            for (int i = 0; i < slotAmount; i++)
+            {
+                GameObject slotGO = Instantiate(_slotPrefab, _gridContainer);   //Instantiates GameObject
+                InventorySlot slot = slotGO.GetComponent<InventorySlot>();                //Fetches the InventorySlot script
+                slot.Init(i);                                                   //Initializes slot with index
+                _slots.Add(slot);                                               //Adds slot to list of slots.
+            }
         }
 
         public void UpdateAll(List<InventoryEntry> inventory)
         {
-            
+            for (int i = 0; i < inventory.Count; i++)
+                UpdateSlot(i, inventory[i]);
         }
 
-        //Updates a given InventoryItem with small stat updates (i.e. a new amount or new description)
+        //Updates a given slot with a new InventoryEntry.
         public void UpdateSlot(int slotIndex, InventoryEntry entry)
         {
+            InventorySlot slot = _slots[slotIndex];
 
+            // Step 1: Clear existing item visual
+            foreach (Transform child in slot.transform)
+            {
+                Destroy(child.gameObject);
+            }
+
+            //If the new entry is empty, no further action necessary
+            if (entry == InventoryManager.Empty)
+                return;
+
+            //Instantiate new InventoryItem based on itemData :D
+            GameObject itemGO = Instantiate(_inventoryItemPrefab, slot.transform);
+            InventoryItem itemUI = itemGO.GetComponent<InventoryItem>();
+            itemUI.Init(entry);
         }
 
         //Erases a given InventoryItem from the grid
         public void ClearSlot(int slotIndex)
         {
+            InventorySlot slot = _slots[slotIndex];
 
+            foreach (Transform child in slot.transform)
+                Destroy(child.gameObject);
         }
 
         //Erases all InventoryItems from the grid

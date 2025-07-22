@@ -25,17 +25,11 @@ namespace GoopGame.UI
 
         //IMPORTANT!! Almost none of these variables will be public later, they are only public now
         //for testing purposes!
-        public string displayName;
-        public string displayDescription;
-        public int displayAmount = 1;
+        private string displayName;
+        private string displayDescription;
+        private int displayAmount = 1;
 
 
-
-
-        public void Start() //TODO: Replace this entirely with the Init() function
-        {
-            UpdateUI();
-        }
 
         public void Init(InventoryEntry entry)
         {
