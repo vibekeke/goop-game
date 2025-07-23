@@ -38,10 +38,6 @@ namespace GoopGame.Engine
         // Called when a single slot is changed (new item added, replaced, or amount changed)
         public event Action<int, InventoryEntry> OnSlotChanged;
 
-        //OnItemRemoved(int SlotIndex)
-        // Called when an item is removed from a slot entirely
-        public event Action<int> OnItemRemoved;
-
 
         // --- Inventory Management ----
 
@@ -199,15 +195,39 @@ namespace GoopGame.Engine
         //Remove InventoryEntry from list based on slotIndex value
         public void RemoveItem(int _slotIndex)
         {
+            Debug.Log("Should have removed it...");
             _inventory[_slotIndex] = Empty;
-            OnItemRemoved?.Invoke(_slotIndex);
+            OnSlotChanged?.Invoke(_slotIndex, _inventory[_slotIndex]);
         }
 
 
         //Called by the UI when player drops an item onto another item
-        public void HandleDrop(int from, int to)
+        public void HandleDrop(int fromIndex, int toIndex)
         {
-            //
+            InventoryEntry droppedEntry = _inventory[fromIndex];
+            InventoryEntry existingEntry = _inventory[toIndex];
+
+            if (existingEntry == Empty)
+            {
+                _inventory[toIndex] = droppedEntry;
+                _inventory[fromIndex] = Empty;
+
+                Debug.Log($"Tried moving item from {fromIndex} to {toIndex}");
+                OnSlotChanged?.Invoke(fromIndex, Empty);
+                OnSlotChanged?.Invoke(toIndex, droppedEntry);
+                return;
+            }
+
+            //Swap Logic
+
+
+            //Stack Logic
+
+
+            //If nothing has changed yet...
+            _inventory[fromIndex] = droppedEntry;
+            OnSlotChanged?.Invoke(fromIndex, droppedEntry);
+
         }
 
         //Called by the UI when player wants to place an item

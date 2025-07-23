@@ -34,7 +34,6 @@ namespace GoopGame.UI
             _inventoryManager.OnInventoryInitialized += InitSlots;
             _inventoryManager.OnInventoryChanged += UpdateAll;
             _inventoryManager.OnSlotChanged += UpdateSlot;
-            _inventoryManager.OnItemRemoved += ClearSlot;
         }
 
         //Initializes the grid with a specific amount of slots.
@@ -50,7 +49,8 @@ namespace GoopGame.UI
             {
                 GameObject slotGO = Instantiate(_slotPrefab, _gridContainer);   //Instantiates GameObject
                 InventorySlot slot = slotGO.GetComponent<InventorySlot>();                //Fetches the InventorySlot script
-                slot.Init(i);                                                   //Initializes slot with index
+                slot.Init(i);
+                slot.OnSlotDrop += HandleItemDrop;                                                  //Initializes slot with index
                 _slots.Add(slot);                                               //Adds slot to list of slots.
             }
         }
@@ -69,7 +69,7 @@ namespace GoopGame.UI
             // Step 1: Clear existing item visual
             foreach (Transform child in slot.transform)
             {
-                Destroy(child.gameObject);
+                DestroyImmediate(child.gameObject);
             }
 
             //If the new entry is empty, no further action necessary
@@ -79,7 +79,7 @@ namespace GoopGame.UI
             //Instantiate new InventoryItem based on itemData :D
             GameObject itemGO = Instantiate(_inventoryItemPrefab, slot.transform);
             InventoryItem itemUI = itemGO.GetComponent<InventoryItem>();
-            itemUI.Init(entry);
+            itemUI.Init(slotIndex, entry);
         }
 
         //Erases a given InventoryItem from the grid
@@ -95,6 +95,11 @@ namespace GoopGame.UI
         public void ClearAll()
         {
 
+        }
+
+        public void HandleItemDrop(int fromIndex, int toIndex)
+        {
+            _inventoryManager.HandleDrop(fromIndex, toIndex);
         }
 
     }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -12,36 +13,41 @@ public class InventorySlot : MonoBehaviour, IDropHandler
             slotIndex = index;
         }
 
+        public event Action<int, int> OnSlotDrop; //from index, to index
+
         /// <summary>
-        /// WARNING: SWAPPING LOGIC WILL BE HANDLED BY INVENTORYMANAGER. Currently the visual drag and drop will
-        /// desync the item placement from the actual inventory :3 
-        /// Changes the parent of the dropped element to self. Swaps items if inventory slot is already occupied.
+        /// Registers dropped InventoryItem, fetches it's own index and fires a signal to
+        /// InventoryUI.cs featuring the fromIndex (where item originates) and toIndex (itself)
         /// </summary>
         public void OnDrop(PointerEventData eventData)
         {
-            //If there is not item in this slot:
-            if (transform.childCount == 0)
+            //Fetches InventoryItem object dropped onto it.
+            GameObject droppedItem = eventData.pointerDrag;
+
+            if (droppedItem == null)
+                return;
+
+            //Get's the inventoryItem script, for the purpose of getting to- and from-index
+            InventoryItem inventoryItem = droppedItem.GetComponent<InventoryItem>();
+
+            if (inventoryItem == null)
             {
-                GameObject dropped = eventData.pointerDrag;
-                DraggableUI draggable = dropped.GetComponent<DraggableUI>();    //Gets the item script
-                draggable.ParentAfterDrag = transform;                          //Sets the items parent to self
+                Debug.LogError("Dropped Item does not have an InventoryItem script D:");
+                return;
             }
-            //If there is an item, swap them:
-            else
+
+            int fromIndex = inventoryItem.ParentIndex;
+            int toIndex = slotIndex;
+
+
+            if (fromIndex == toIndex)
             {
-                GameObject dropped = eventData.pointerDrag;
-                DraggableUI droppedDraggable = dropped.GetComponent<DraggableUI>();
-
-                GameObject current = transform.GetChild(0).gameObject;
-                DraggableUI currentDraggable = current.GetComponent<DraggableUI>();
-
-                //Set the previous item's parent field to the dropped item to swap them.
-                currentDraggable.transform.SetParent(droppedDraggable.ParentAfterDrag);
-                currentDraggable.transform.localPosition = Vector3.zero;
-
-                droppedDraggable.ParentAfterDrag = transform;
+                return; //Cannot drop item onto itself.
             }
-            //TODO: Add logic for stackable items (should probably call an InventoryManager)
+
+            OnSlotDrop?.Invoke(fromIndex, toIndex);
+
+            Destroy(droppedItem); //Destroy the dropped item GameObject to prevent duplicate children
         }
     }
 }
