@@ -51,7 +51,7 @@ namespace GoopGame.Data.Editor
             EditorGUILayout.EndHorizontal();
 
             //Set the threshold texts to match the stat type.
-            string lessThanText = (GoopStatTypes)_type.enumValueIndex switch
+            string lessThanText = (GoopStatTypes)_type.enumValueFlag switch
             {
                 GoopStatTypes.Hunger => "Hungry",
                 GoopStatTypes.Temperature => "Cold",
@@ -59,7 +59,7 @@ namespace GoopGame.Data.Editor
                 GoopStatTypes.Energy => "Tired",
                 _ => "Low State"
             };
-            string greaterThanText = (GoopStatTypes)_type.enumValueIndex switch
+            string greaterThanText = (GoopStatTypes)_type.enumValueFlag switch
             {
                 GoopStatTypes.Hunger => "Sated",
                 GoopStatTypes.Temperature => "Hot",
