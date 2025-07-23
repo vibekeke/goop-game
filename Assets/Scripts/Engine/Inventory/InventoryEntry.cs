@@ -1,6 +1,7 @@
 using UnityEngine;
+using GoopGame.Data;
 
-namespace GoopGame.Data
+namespace GoopGame.Engine
 {
 
     /// <summary>
