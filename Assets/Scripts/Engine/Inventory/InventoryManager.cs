@@ -204,6 +204,7 @@ namespace GoopGame.Engine
         //Called by the UI when player drops an item onto another item
         public void HandleDrop(int fromIndex, int toIndex)
         {
+            Debug.Log($"Inventory Manager registered drop from index {fromIndex} to {toIndex}");
             InventoryEntry droppedEntry = _inventory[fromIndex];
             InventoryEntry existingEntry = _inventory[toIndex];
 
@@ -218,16 +219,119 @@ namespace GoopGame.Engine
                 return;
             }
 
-            //Swap Logic
-
-
             //Stack Logic
+            if (droppedEntry.Stackable && droppedEntry.Item == existingEntry.Item)
+            {
+                //Stacking is only relevant if existingEntry has space
+                if (existingEntry.Amount < existingEntry.MaxStack)
+                {
+                    int spaceLeft = existingEntry.MaxStack - existingEntry.Amount;
+
+                    //Add as much as possible to the existing stack
+                    int toMove = Mathf.Min(spaceLeft, droppedEntry.Amount);
+                    existingEntry.SetAmount(existingEntry.Amount + toMove);
+                    droppedEntry.SetAmount(droppedEntry.Amount - toMove);
+
+                    //if there is nothing left in the dropped stack, clear that entry
+                    if (droppedEntry.Amount == 0)
+                    {
+                        _inventory[fromIndex] = Empty;
+                    }
+
+                    OnSlotChanged?.Invoke(fromIndex, _inventory[fromIndex]);
+                    OnSlotChanged?.Invoke(toIndex, existingEntry);
+                    return;
+                }
+            }
+
+
+            //Swap Logic
+            if (existingEntry != Empty)
+            {
+                _inventory[toIndex] = droppedEntry;
+                _inventory[fromIndex] = existingEntry;
+
+                OnSlotChanged?.Invoke(fromIndex, existingEntry);
+                OnSlotChanged?.Invoke(toIndex, droppedEntry);
+                return;
+            }
 
 
             //If nothing has changed yet...
             _inventory[fromIndex] = droppedEntry;
             OnSlotChanged?.Invoke(fromIndex, droppedEntry);
+        }
 
+        public bool TrySplitStack(int index)
+        {
+            InventoryEntry entry = _inventory[index];
+            if (entry == Empty || entry.Amount < 2)
+                return false;
+
+            int half = entry.Amount / 2;
+
+            //Find an empty slot
+            for (int i = 0; i < _inventory.Count; i++)
+            {
+                if (_inventory[i] == Empty)
+                {
+                    entry.SetAmount(entry.Amount - half);                  //Shrink original stack
+                    _inventory[i] = new InventoryEntry(entry.Item, half);   //Create new
+
+                    OnSlotChanged?.Invoke(index, entry);
+                    OnSlotChanged?.Invoke(i, _inventory[i]);
+                    return true;
+                }
+            }
+
+            //The item couldn't be placed into the inventory. => "Not enough space"
+            Debug.Log("Not enough space to split stack");
+            return false;
+        }
+
+        /// <summary>
+        /// Removes one from an existing stack and adds it to another - if possible.
+        /// Used when an item is dragged + right click over an inventory slot.
+        /// - When a drag begins, the source slot is marked as “drag-owned” so the UI never regenerates an icon there; 
+        /// every successful TryTransferOne call then updates the icon in the player’s hand instead of redrawing the hidden source slot.
+        /// </summary>
+        public bool TryTransferOne(int fromIndex, int toIndex)
+        {
+            if (fromIndex == toIndex) return false;
+
+            InventoryEntry source = _inventory[fromIndex];
+            InventoryEntry destination = _inventory[toIndex];
+
+            if (!source.Stackable) return false;                        //cannot split or merge a non-stackable stack
+            if (source == Empty || source.Amount < 1) return false;     //(source should never really be empty but it's nice to double check)
+
+
+            //case 1: Target slot is empty
+            if (destination == Empty)
+            {
+                _inventory[toIndex] = new InventoryEntry(source.Item, 1);
+            }
+            //case 2: Target slot has the same stackable item
+            else if (destination.Item == source.Item && destination.Amount < destination.MaxStack)
+            {
+                destination.SetAmount(destination.Amount + 1);
+            }
+            //case 3: Target slot is occupied, cannot merge.
+            else
+            {
+                return false;
+            }
+
+            source.SetAmount(source.Amount - 1);
+
+            if (source.Amount == 0)
+            {
+                _inventory[fromIndex] = Empty;
+            }
+
+            OnSlotChanged?.Invoke(fromIndex, _inventory[fromIndex]);
+            OnSlotChanged?.Invoke(toIndex, _inventory[toIndex]);
+            return true;
         }
 
         //Called by the UI when player wants to place an item

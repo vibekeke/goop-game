@@ -16,6 +16,7 @@ namespace GoopGame.Engine
 
         public int MaxStack => Item.MaxStack;
         public string Name => Item.Name;
+        public bool Stackable => Item.Stackable;
 
         //TODO: If we want to be able to save "living" objects - goops, plants etc with mutable stats, we can add 
         // a variable "customData" or "itemSnapshot" here that saves the in-game variables here. 

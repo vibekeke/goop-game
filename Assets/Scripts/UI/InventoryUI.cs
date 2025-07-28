@@ -49,7 +49,7 @@ namespace GoopGame.UI
             {
                 GameObject slotGO = Instantiate(_slotPrefab, _gridContainer);   //Instantiates GameObject
                 InventorySlot slot = slotGO.GetComponent<InventorySlot>();                //Fetches the InventorySlot script
-                slot.Init(i);
+                slot.Init(i, this);
                 slot.OnSlotDrop += HandleItemDrop;                                                  //Initializes slot with index
                 _slots.Add(slot);                                               //Adds slot to list of slots.
             }
@@ -64,6 +64,14 @@ namespace GoopGame.UI
         //Updates a given slot with a new InventoryEntry.
         public void UpdateSlot(int slotIndex, InventoryEntry entry)
         {
+            // if this slot is currently being dragged, ignore the redraw ---
+            if (InventoryItem.CurrentDrag != null &&
+                InventoryItem.CurrentDrag.ParentIndex == slotIndex)
+            {
+                // The drag icon will take care of its own count display
+                return;
+            }
+
             InventorySlot slot = _slots[slotIndex];
 
             // Step 1: Clear existing item visual
@@ -79,7 +87,7 @@ namespace GoopGame.UI
             //Instantiate new InventoryItem based on itemData :D
             GameObject itemGO = Instantiate(_inventoryItemPrefab, slot.transform);
             InventoryItem itemUI = itemGO.GetComponent<InventoryItem>();
-            itemUI.Init(slotIndex, entry);
+            itemUI.Init(slotIndex, entry, this);
         }
 
         //Erases a given InventoryItem from the grid
@@ -97,10 +105,23 @@ namespace GoopGame.UI
 
         }
 
+
+        // --- Requesting changes in Inventory --
         public void HandleItemDrop(int fromIndex, int toIndex)
         {
             _inventoryManager.HandleDrop(fromIndex, toIndex);
         }
 
+        public void RequestSplit(int slotIndex)
+        {
+            //TrySplitStack returns a bool, to be used for visual feedback later.
+            _inventoryManager.TrySplitStack(slotIndex);
+        }
+
+        public bool RequestTransferOne(int fromIndex, int toIndex)
+        {
+            //TryTransferOne returns a bool, to be used for visual feedback later.
+            return _inventoryManager.TryTransferOne(fromIndex, toIndex);
+        }
     }
 }
