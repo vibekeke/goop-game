@@ -7,14 +7,15 @@ using GoopGame.Engine;
 namespace GoopGame.UI
 {
     /// <summary>
-    /// WIP! 
     /// Handles visual updates for the inventory UI.
     /// - Listens to InventoryManager events
     /// - Spawns slots and InventoryItem visuals
     /// - Updates or clears slots as needed
+    /// - Forwards requests/calls from InventorySlot and InventoryItem to the InventoryManager
     /// </summary>
     public class InventoryUI : MonoBehaviour
     {
+        [Header("References")]
         [SerializeField]
         private InventoryManager _inventoryManager; //For listening to events only. We want dumb UI :)
         [SerializeField]
@@ -23,13 +24,29 @@ namespace GoopGame.UI
         private GameObject _slotPrefab;
         [SerializeField]
         private GameObject _inventoryItemPrefab;
+        [SerializeField]
+        private Transform _cursorRoot;              //The Canvas where a dragged item should live for visual purposes.
 
+
+        // ----
         private List<InventorySlot> _slots = new();
+
+        // Exposed helpers for InventoryItem / InventorySlot => InventoryManager
+        public Transform CursorRoot => _cursorRoot;
+        public bool HasHeldEntry => _inventoryManager.HeldEntry != null;
+
+        public bool TryPickUp(int index) => _inventoryManager.BeginPickup(index);
+        public void CancelHeld() => _inventoryManager.CancelHeld();
+        public bool TryPlaceHeld(int index) => _inventoryManager.PlaceHeld(index);
+        public bool TryDepositOne(int index) => _inventoryManager.DepositOne(index);
+        public bool TrySplitStack(int index) => _inventoryManager.SplitStack(index);
+
 
         void Start()
         {
-            if (_inventoryManager == null)
+            if (_inventoryManager == null) {
                 Debug.LogError("InventoryManager reference not assigned in InventoryUI.");
+            }
 
             _inventoryManager.OnInventoryInitialized += InitSlots;
             _inventoryManager.OnInventoryChanged += UpdateAll;
@@ -40,8 +57,7 @@ namespace GoopGame.UI
         public void InitSlots(int slotAmount)
         {
             //Clearing out the previous stuff so we don't get dupes
-            foreach (Transform child in _gridContainer)
-                Destroy(child.gameObject);
+            ClearAllItems();
 
             _slots.Clear();
 
@@ -49,8 +65,7 @@ namespace GoopGame.UI
             {
                 GameObject slotGO = Instantiate(_slotPrefab, _gridContainer);   //Instantiates GameObject
                 InventorySlot slot = slotGO.GetComponent<InventorySlot>();                //Fetches the InventorySlot script
-                slot.Init(i, this);
-                slot.OnSlotDrop += HandleItemDrop;                                                  //Initializes slot with index
+                slot.Init(i, this);                                                 //Initializes slot with index
                 _slots.Add(slot);                                               //Adds slot to list of slots.
             }
         }
@@ -66,9 +81,11 @@ namespace GoopGame.UI
         {
             // if this slot is currently being dragged, ignore the redraw ---
             if (InventoryItem.CurrentDrag != null &&
-                InventoryItem.CurrentDrag.ParentIndex == slotIndex)
+                InventoryItem.CurrentDrag.ParentIndex == slotIndex && 
+                entry == InventoryManager.Empty)
             {
                 // The drag icon will take care of its own count display
+                Debug.Log($"Item Redraw Ignored at slot {slotIndex}");
                 return;
             }
 
@@ -77,7 +94,7 @@ namespace GoopGame.UI
             // Step 1: Clear existing item visual
             foreach (Transform child in slot.transform)
             {
-                DestroyImmediate(child.gameObject);
+                Destroy(child.gameObject);
             }
 
             //If the new entry is empty, no further action necessary
@@ -100,28 +117,11 @@ namespace GoopGame.UI
         }
 
         //Erases all InventoryItems from the grid
-        public void ClearAll()
+        public void ClearAllItems()
         {
-
+            foreach (Transform child in _gridContainer)
+                Destroy(child.gameObject);
         }
 
-
-        // --- Requesting changes in Inventory --
-        public void HandleItemDrop(int fromIndex, int toIndex)
-        {
-            _inventoryManager.HandleDrop(fromIndex, toIndex);
-        }
-
-        public void RequestSplit(int slotIndex)
-        {
-            //TrySplitStack returns a bool, to be used for visual feedback later.
-            _inventoryManager.TrySplitStack(slotIndex);
-        }
-
-        public bool RequestTransferOne(int fromIndex, int toIndex)
-        {
-            //TryTransferOne returns a bool, to be used for visual feedback later.
-            return _inventoryManager.TryTransferOne(fromIndex, toIndex);
-        }
     }
 }

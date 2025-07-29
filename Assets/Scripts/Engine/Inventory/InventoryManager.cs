@@ -20,7 +20,13 @@ namespace GoopGame.Engine
         public static readonly InventoryEntry Empty = new InventoryEntry(null, 0);
 
         [SerializeField]
-        private int _slotAmount = 10;
+        private int _slotAmount = 15;
+
+        // --- Held stack state
+        //When an inventoryItem is dragged, the move should be reflected in the manager.
+        private InventoryEntry _heldEntry = null;
+        public InventoryEntry HeldEntry => _heldEntry;
+        private int _heldOrigin = -1;
 
 
         // --- EVENTS --- 
@@ -39,7 +45,7 @@ namespace GoopGame.Engine
         public event Action<int, InventoryEntry> OnSlotChanged;
 
 
-        // --- Inventory Management ----
+        // --- Initialization ----
 
         //Initialize inventory slots and inventory items.
         public void Start()
@@ -75,6 +81,9 @@ namespace GoopGame.Engine
             OnInventoryChanged?.Invoke(_inventory);
         }
 
+
+        // --- Game Controlled Operations ---
+
         /// <summary>
         /// Called by game when a new item is added. 
         /// - Instantiates InventoryEntry and finds a new slot for it.
@@ -90,7 +99,7 @@ namespace GoopGame.Engine
 
             if (itemData.Stackable && CanMergeStack(itemData, amount))
             {
-                Debug.Log("Should have merged");
+                Debug.Log("Started merge operation");
                 MergeStack(newEntry, amount);
                 PrintInventory();
                 return true;
@@ -179,7 +188,7 @@ namespace GoopGame.Engine
                 if (_inventory[i] == Empty)
                 {
                     int stackSize = Mathf.Min(newEntry.Amount, newEntry.MaxStack);
-                    _inventory[i] = new InventoryEntry(newEntry.Item, stackSize); //Will this cause wierdness??
+                    _inventory[i] = new InventoryEntry(newEntry.Item, stackSize);
                     newEntry.SetAmount(newEntry.Amount - stackSize);
                     OnSlotChanged?.Invoke(i, _inventory[i]);
                 }
@@ -193,76 +202,205 @@ namespace GoopGame.Engine
 
 
         //Remove InventoryEntry from list based on slotIndex value
-        public void RemoveItem(int _slotIndex)
+        public void RemoveItem(int slotIndex)
         {
-            Debug.Log("Should have removed it...");
-            _inventory[_slotIndex] = Empty;
-            OnSlotChanged?.Invoke(_slotIndex, _inventory[_slotIndex]);
+            Debug.Log($"Removed item at index {slotIndex}");
+            _inventory[slotIndex] = Empty;
+            OnSlotChanged?.Invoke(slotIndex, _inventory[slotIndex]);
         }
 
 
-        //Called by the UI when player drops an item onto another item
-        public void HandleDrop(int fromIndex, int toIndex)
+
+        // --- Player Controlled Inventory Operations ---
+        public bool BeginPickup(int slotIndex)
         {
-            Debug.Log($"Inventory Manager registered drop from index {fromIndex} to {toIndex}");
-            InventoryEntry droppedEntry = _inventory[fromIndex];
-            InventoryEntry existingEntry = _inventory[toIndex];
-
-            if (existingEntry == Empty)
+            if (_heldEntry != null)
             {
-                _inventory[toIndex] = droppedEntry;
-                _inventory[fromIndex] = Empty;
-
-                Debug.Log($"Tried moving item from {fromIndex} to {toIndex}");
-                OnSlotChanged?.Invoke(fromIndex, Empty);
-                OnSlotChanged?.Invoke(toIndex, droppedEntry);
-                return;
+                Debug.LogWarning("InventoryManager tried to pick up item while already holding another");
+                return false;
+            }
+            if (!IsValidIndex(slotIndex))
+            {
+                Debug.LogError("Tried to pick up item with invalid Index");
+                return false;
             }
 
-            //Stack Logic
-            if (droppedEntry.Stackable && droppedEntry.Item == existingEntry.Item)
+            InventoryEntry entry = _inventory[slotIndex];
+            if (entry == Empty)
             {
-                //Stacking is only relevant if existingEntry has space
-                if (existingEntry.Amount < existingEntry.MaxStack)
+                return false; //nothing to pick up
+            }
+
+            _heldEntry = entry;
+            _heldOrigin = slotIndex;
+            _inventory[slotIndex] = Empty;
+            OnSlotChanged?.Invoke(slotIndex, Empty);
+            return true;
+        }
+        
+        /// <summary>
+        /// Sets the _heldEntry to null
+        /// </summary>
+        private void ClearHeld()
+        {
+            _heldEntry = null;
+            _heldOrigin = -1;
+        }
+
+        /// <summary>
+        /// Attempts to place the remaining held stack into target Index.
+        /// Implements move into empty slot, merging stacks, and swapping entries.
+        /// </summary>
+        public bool PlaceHeld(int targetIndex)
+        {
+            if (_heldEntry == null)
+            {
+                Debug.LogWarning("Tried to place null-entry from hand");
+                return false;
+            }
+            if (!IsValidIndex(targetIndex)) return false;
+
+            var destination = _inventory[targetIndex];
+
+            // 1) Empty target – simple move
+            if (destination == Empty)
+            {
+                _inventory[targetIndex] = _heldEntry;
+                ClearHeld();
+                OnSlotChanged?.Invoke(targetIndex, _inventory[targetIndex]);
+                return true;
+            }
+
+            // 2) Attempt merge
+            if (_heldEntry.Stackable &&
+            destination.Item == _heldEntry.Item &&
+            destination.Amount < destination.MaxStack)
+            {
+                int spaceLeft = destination.MaxStack - destination.Amount;
+                int toMove = Mathf.Min(spaceLeft, _heldEntry.Amount);
+
+                destination.SetAmount(destination.Amount + toMove);
+                _heldEntry.SetAmount(_heldEntry.Amount - toMove);
+
+                OnSlotChanged?.Invoke(targetIndex, destination);
+
+
+                if (_heldEntry.Amount == 0)
                 {
-                    int spaceLeft = existingEntry.MaxStack - existingEntry.Amount;
+                    ClearHeld();
+                }
+                else
+                {
+                    _inventory[_heldOrigin] = _heldEntry;
+                    OnSlotChanged?.Invoke(_heldOrigin, _inventory[_heldOrigin]);
+                    ClearHeld();
+                }
+                return true;
+            }
 
-                    //Add as much as possible to the existing stack
-                    int toMove = Mathf.Min(spaceLeft, droppedEntry.Amount);
-                    existingEntry.SetAmount(existingEntry.Amount + toMove);
-                    droppedEntry.SetAmount(droppedEntry.Amount - toMove);
+            // 3) Swap
+            _inventory[_heldOrigin] = destination;
+            _inventory[targetIndex] = _heldEntry;
 
-                    //if there is nothing left in the dropped stack, clear that entry
-                    if (droppedEntry.Amount == 0)
-                    {
-                        _inventory[fromIndex] = Empty;
-                    }
+            OnSlotChanged?.Invoke(_heldOrigin, destination);
+            OnSlotChanged?.Invoke(targetIndex, _heldEntry);
 
-                    OnSlotChanged?.Invoke(fromIndex, _inventory[fromIndex]);
-                    OnSlotChanged?.Invoke(toIndex, existingEntry);
-                    return;
+            ClearHeld();
+            return true;
+        }
+
+        /// <summary>
+        /// Cancels the drag: places the held stack back into its origin slot (if empty) or the first free slot.
+        /// </summary>
+        public void CancelHeld()
+        {
+            if (_heldEntry == null) return;
+
+            // 1) Try original slot first (handles merge, move, or swap)
+            if (_heldOrigin >= 0 && PlaceHeld(_heldOrigin))
+                return; // success – PlaceHeld internally cleared the held entry
+
+            // 2) Try to merge into any compatible partial stack
+            if (_heldEntry.Stackable) {
+                for (int i = 0; i < _inventory.Count && _heldEntry != null; i++)
+                {
+                    var stack = _inventory[i];
+                    if (stack == Empty) continue;
+                    if (stack.Item != _heldEntry.Item) continue;
+                    if (stack.Amount >= stack.MaxStack) continue;
+
+                    int space = stack.MaxStack - stack.Amount;
+                    int toMove = Mathf.Min(space, _heldEntry.Amount);
+                    stack.SetAmount(stack.Amount + toMove);
+                    _heldEntry.SetAmount(_heldEntry.Amount - toMove);
+                    OnSlotChanged?.Invoke(i, stack);
+
+                    if (_heldEntry.Amount == 0) {
+                        ClearHeld();
+                        return; }
                 }
             }
 
-
-            //Swap Logic
-            if (existingEntry != Empty)
+            // 3) Find first empty slot
+            int emptySlotIndex = _inventory.IndexOf(Empty);
+            if (emptySlotIndex >= 0)
             {
-                _inventory[toIndex] = droppedEntry;
-                _inventory[fromIndex] = existingEntry;
-
-                OnSlotChanged?.Invoke(fromIndex, existingEntry);
-                OnSlotChanged?.Invoke(toIndex, droppedEntry);
+                _inventory[emptySlotIndex] = _heldEntry;
+                OnSlotChanged?.Invoke(emptySlotIndex, _heldEntry);
+                ClearHeld();
                 return;
             }
 
+            // No space – this should not happen in normal UI flow
+            Debug.LogError("Inventory full: unable to cancel held item; discarding.");
+            ClearHeld();
 
-            //If nothing has changed yet...
-            _inventory[fromIndex] = droppedEntry;
-            OnSlotChanged?.Invoke(fromIndex, droppedEntry);
         }
 
-        public bool TrySplitStack(int index)
+
+                /// <summary>
+        /// Moves exactly one item from the held stack to the target slot if possible.
+        /// Returns true if a transfer happened.
+        /// </summary>
+        public bool DepositOne(int targetIndex)
+        {
+            if (_heldEntry == null) return false;
+            if (!IsValidIndex(targetIndex)) return false;
+            if (!_heldEntry.Stackable) return false;
+            if (_heldEntry.Amount < 1) return false;
+
+            var destination = _inventory[targetIndex];
+
+            // Case 1: Empty slot – create new stack of 1
+            if (destination == Empty)
+            {
+                _inventory[targetIndex] = new InventoryEntry(_heldEntry.Item, 1);
+            }
+            // Case 2: Same item & space available – increment
+            else if (destination.Item == _heldEntry.Item && destination.Amount < destination.MaxStack)
+            {
+                destination.SetAmount(destination.Amount + 1);
+            }
+            //Case 3: Slot occupied by different item.
+            else
+            {
+                return false; // cannot merge here
+            }
+
+            // Remove one from the held stack
+            _heldEntry.SetAmount(_heldEntry.Amount - 1);
+            OnSlotChanged?.Invoke(targetIndex, _inventory[targetIndex]);
+
+            if (_heldEntry.Amount == 0)
+                ClearHeld();
+
+            return true;
+        }
+
+        /// <summary>
+        /// Splits a stack in the inventory into two, and assigns half to a new slot - if possible. Else returns false.
+        /// </summary>
+        public bool SplitStack(int index)
         {
             InventoryEntry entry = _inventory[index];
             if (entry == Empty || entry.Amount < 2)
@@ -289,57 +427,17 @@ namespace GoopGame.Engine
             return false;
         }
 
-        /// <summary>
-        /// Removes one from an existing stack and adds it to another - if possible.
-        /// Used when an item is dragged + right click over an inventory slot.
-        /// - When a drag begins, the source slot is marked as “drag-owned” so the UI never regenerates an icon there; 
-        /// every successful TryTransferOne call then updates the icon in the player’s hand instead of redrawing the hidden source slot.
-        /// </summary>
-        public bool TryTransferOne(int fromIndex, int toIndex)
-        {
-            if (fromIndex == toIndex) return false;
-
-            InventoryEntry source = _inventory[fromIndex];
-            InventoryEntry destination = _inventory[toIndex];
-
-            if (!source.Stackable) return false;                        //cannot split or merge a non-stackable stack
-            if (source == Empty || source.Amount < 1) return false;     //(source should never really be empty but it's nice to double check)
-
-
-            //case 1: Target slot is empty
-            if (destination == Empty)
-            {
-                _inventory[toIndex] = new InventoryEntry(source.Item, 1);
-            }
-            //case 2: Target slot has the same stackable item
-            else if (destination.Item == source.Item && destination.Amount < destination.MaxStack)
-            {
-                destination.SetAmount(destination.Amount + 1);
-            }
-            //case 3: Target slot is occupied, cannot merge.
-            else
-            {
-                return false;
-            }
-
-            source.SetAmount(source.Amount - 1);
-
-            if (source.Amount == 0)
-            {
-                _inventory[fromIndex] = Empty;
-            }
-
-            OnSlotChanged?.Invoke(fromIndex, _inventory[fromIndex]);
-            OnSlotChanged?.Invoke(toIndex, _inventory[toIndex]);
-            return true;
-        }
 
         //Called by the UI when player wants to place an item
-        public void TryPlaceItem(int index)
+        public bool TryPlaceInWorld(int index)
         {
-            //
+            // TODO: implement
+            return false;
         }
 
+        private bool IsValidIndex(int idx) {
+            return idx >= 0 && idx < _inventory.Count;
+        }
 
         private void PrintInventory()
         {

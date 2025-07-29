@@ -1546,6 +1546,7 @@ MonoBehaviour:
   _gridContainer: {fileID: 40460975}
   _slotPrefab: {fileID: 4106919227066029734, guid: 924b4001aa49d6249b7b8c608dd7996e, type: 3}
   _inventoryItemPrefab: {fileID: 7427794587711173211, guid: ffde47080573c1440a1c9b5322a7a9d4, type: 3}
+  _cursorRoot: {fileID: 358746446}
 --- !u!1 &1601149948
 GameObject:
   m_ObjectHideFlags: 0

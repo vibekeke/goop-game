@@ -38,22 +38,14 @@ namespace GoopGame.UI
         /// --- Drag and Drop ---
         [HideInInspector]
         public int ParentIndex;
-        public Transform ParentBeforeDrag;   //holds the UI-slot the item should snap to
+        public Transform _root;
+        private Camera _camera;
 
-        private Transform _cacheRoot;       //since we access the root several times, and don't expect this to change,
-                                            //we cache the value to avoid calling .GetRoot() several times.
-
-        private Transform _root
-        {           //property field for root, to check if its cached.
-            get
-            {
-                if (_cacheRoot == null)
-                    _cacheRoot = transform.root;
-                return _cacheRoot;
-            }
+        public void Awake()
+        {
+            _camera = GlobalManager.Camera;
         }
-
-
+        
         public void Init(int slotIndex, InventoryEntry entry, InventoryUI ui)
         {
             _itemData = entry.Item;
@@ -63,6 +55,7 @@ namespace GoopGame.UI
             _displayAmount = entry.Amount;
             _inventoryUI = ui;
             ParentIndex = slotIndex;
+            _root = _inventoryUI.CursorRoot;
             UpdateUI();
         }
 
@@ -77,7 +70,7 @@ namespace GoopGame.UI
 
             //TODO: Hover over item to see its name and description
         }
-        
+
         //Used during right-click item transfer. Called by the target InventorySlot.
         public void DecreaseDisplayAmount()
         {
@@ -102,18 +95,30 @@ namespace GoopGame.UI
         /// </summary>
         public void OnBeginDrag(PointerEventData eventData)
         {
+            //Ignore all right/middle mouse button drags. 
             if (eventData.button != PointerEventData.InputButton.Left)
             {
                 eventData.pointerDrag = null;
-                return;                             //Ignore all right/middle mouse button drags. 
+                return;
 
             }
 
-            s_CurrentDrag = this;
             Debug.Log("Begin Drag");
-            ParentBeforeDrag = transform.parent;
+            s_CurrentDrag = this;
+
+            //Ask UIManager -> InventoryManager to lift the stack
+            bool held = _inventoryUI.TryPickUp(ParentIndex);
+            if (!held)
+            {
+                eventData.pointerDrag = null;
+                s_CurrentDrag = null;
+                return;
+            }
+
+            //Places the InventoryItem on top of the hierarchy for visual purposes
             transform.SetParent(_root);             //Parents the item to the grid instead of the slots
             transform.SetAsLastSibling();           //Sets it at the top of our view
+            transform.position = Input.mousePosition;
             _image.raycastTarget = false;
         }
 
@@ -122,12 +127,14 @@ namespace GoopGame.UI
         {
             if (eventData.button != PointerEventData.InputButton.Left)
                 return;                             //Ignore all right/middle mouse button drags. 
-                
+
+            if (s_CurrentDrag != this) return;      //Inputs are irrelevant for all items that are not currently being dragged.
+
             //Because Canvas Render mode is set to Camera, we need this extra math to calculate pos
             Vector3 mouseScreenPos = Input.mousePosition;
 
             //Access a cached camera field, since calling Camera.main each frame incurs overhead.
-            Vector3 mouseWorldPos = GlobalManager.Camera.ScreenToWorldPoint(mouseScreenPos);
+            Vector3 mouseWorldPos = _camera.ScreenToWorldPoint(mouseScreenPos);
             //Set the z position to be equal to the canvas (root object),
             //since it already was a child of the canvas, the z position remains the same.
             mouseWorldPos.z = _root.position.z;
@@ -141,16 +148,28 @@ namespace GoopGame.UI
         /// </summary>
         public void OnEndDrag(PointerEventData eventData)
         {
+            Debug.Log("Ended Drag");
+
             if (eventData.button != PointerEventData.InputButton.Left)
                 return;                             //Ignore all right/middle mouse button drags. 
-                
-            Debug.Log("End Drag");
-            transform.SetParent(ParentBeforeDrag);
-            transform.localPosition = new Vector3(0, 0, 0);
-            _image.raycastTarget = true;
 
-            if (s_CurrentDrag == this)
-                s_CurrentDrag = null;
+            if (s_CurrentDrag != this) return;      //Inputs are irrelevant for all items that are not currently being dragged.
+
+            //Did we release over a slot?
+            InventorySlot slot = eventData.pointerCurrentRaycast.gameObject
+                            ?.GetComponentInParent<InventorySlot>();
+
+            s_CurrentDrag = null;
+            bool placed = false;
+
+            //Calling the InventoryManager about the change!
+            if (slot != null)
+            {
+                placed = _inventoryUI.TryPlaceHeld(slot.slotIndex);
+            }
+            if (!placed) _inventoryUI.CancelHeld();
+
+            Destroy(gameObject);        //The Item always disappears on end-drag, InventoryManager handles the rest.
         }
 
         private void OnDisable()
@@ -162,17 +181,23 @@ namespace GoopGame.UI
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            // Don’t split stacks while a drag is happening anywhere
+            // If an item is currently being dragged...
             if (s_CurrentDrag != null)
             {
-                Debug.Log("Should have blocked the stack split");
+                // Treat a right-click as “deposit one here”
+                if (eventData.button == PointerEventData.InputButton.Right)
+                {
+                    bool ok = _inventoryUI.TryDepositOne(ParentIndex);
+                    if (ok && InventoryItem.CurrentDrag != null)
+                        InventoryItem.CurrentDrag.DecreaseDisplayAmount(); // keep icon count in sync
+                }
                 return;
             }
 
             if (eventData.button == PointerEventData.InputButton.Right)
             {
                 Debug.Log("Splitting stack");
-                _inventoryUI.RequestSplit(ParentIndex);   
+                _inventoryUI.TrySplitStack(ParentIndex);
             }
         }
     }
