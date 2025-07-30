@@ -25,7 +25,7 @@ namespace GoopGame.Engine
         /// removing set value from goop coin variable
         /// returning success value 0 or 1
         /// </summary>
-        bool Subtract(int subtractValue)
+        public bool Subtract(int subtractValue)
         {
             // if subtract value is too much,
             // coins cant be subtracted from total goop coins
@@ -45,12 +45,12 @@ namespace GoopGame.Engine
         /// add method for bank instance,
         /// adding set value from goop coin variable
         /// </summary>
-        void Add(int addValue)
+        public void Add(int addValue)
         {
             this.GoopCoins += addValue;
         }
 
-        int GetGoopCoins()
+        public int GetGoopCoins()
         {
             return this.GoopCoins;
         }
