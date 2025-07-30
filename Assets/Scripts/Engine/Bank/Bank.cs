@@ -2,17 +2,23 @@ using UnityEngine;
 
 namespace GoopGame.Engine
 {
+    /// <summary>
+    /// bank class with current goop coins for game instance
+    /// to add and subtract from when completing quests and shopping
+    /// </summary>
     public class Bank
     {
+        // goop coin variable for bank object
+        private int GoopCoins;
 
         /// <summary>
-        /// constructor for bank object with goop coin variable
+        /// constructor for new bank object
         /// <summary>
         public Bank()
         {
 
             // goop coin variable for game instance set to 100 by default
-            int GoopCoins = 100;
+            GoopCoins = 100;
 
         }
 
@@ -25,17 +31,17 @@ namespace GoopGame.Engine
         {
             // if subtract value is too much,
             // coins cant be subtracted from total goop coins
-            // return success value 0 - failure
+            // return success value false - failure
             if (subtractValue > GoopCoins)
             {
-                return 0;
+                return false;
             }
 
             // remove subtract value from total goop coins
-            // return success value 1 - success
+            // return success value true - success
             this.GoopCoins -= subtractValue;
-            return 1;
-            
+            return true;
+
         }
 
         /// <summary>
@@ -48,8 +54,5 @@ namespace GoopGame.Engine
             this.GoopCoins += addValue;
 
         }
-
-    }
-    
-
+    } 
 }
