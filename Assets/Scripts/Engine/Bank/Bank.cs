@@ -16,10 +16,8 @@ namespace GoopGame.Engine
         /// <summary>
         public Bank()
         {
-
             // goop coin variable for game instance set to 100 by default
             GoopCoins = 100;
-
         }
 
         /// <summary>
@@ -41,7 +39,6 @@ namespace GoopGame.Engine
             // return success value true - success
             this.GoopCoins -= subtractValue;
             return true;
-
         }
 
         /// <summary>
@@ -50,9 +47,12 @@ namespace GoopGame.Engine
         /// </summary>
         void Add(int addValue)
         {
-
             this.GoopCoins += addValue;
+        }
 
+        int GetGoopCoins()
+        {
+            return this.GoopCoins;
         }
     } 
 }
