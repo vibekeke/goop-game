@@ -6,14 +6,28 @@ using GoopGame.Data;
 namespace GoopGame.Engine
 {
     /// <summary>
-    /// WIP Responsible for all management of items in the inventory: 
     /// - Contains a list of all items (List<InventoryEntry>)
-    /// - Adding and removing items
-    /// - Checking for space, assigning slots
-    /// - Firing Events about changes. 
+    /// - Firing events about changes - UI listens
+    /// - Handles item swapping, stacking, stack splitting
+    /// - Public methods for general use - AddNewItem and RemoveItem
+    /// - Public methods for UI when dragging and dropping items. 
     /// </summary>
     public class InventoryManager : MonoBehaviour
     {
+
+        // --- Public API (for shop/game interactions) -----------------
+        //public bool  AddNewItem(ItemData itemData, int amount) { … }
+        //public void  RemoveItem(int slotIndex)                 { … }
+
+        // --- Public API (for UI drag) --------------------
+        //public bool  BeginPickup(int slot)    { … }
+        //public bool  PlaceHeld(int slot)      { … }
+        //public bool  DepositOne(int slot)     { … }
+        //public void  CancelHeld()             { … }
+        //public bool  SplitStack(int slot)     { … }
+        //public bool  TryPlaceInWorld(int slot){ … }  // TODO
+
+
         private List<InventoryEntry> _inventory;
 
         //Empty entry: used instead of "null" to fill the inventory-list with empty slots.
@@ -68,7 +82,7 @@ namespace GoopGame.Engine
                 for (int i = 0; i < _slotAmount; i++)
                     _inventory.Add(Empty);
             }
-            OnInventoryInitialized?.Invoke(_slotAmount);
+            OnInventoryInitialized?.Invoke(_slotAmount);                    //Update UI
             Debug.Log($"Inventory Initialized with {_slotAmount} slots");
         }
 
@@ -82,124 +96,60 @@ namespace GoopGame.Engine
         }
 
 
-        // --- Game Controlled Operations ---
+
+        // --- Public API - General Use ---
 
         /// <summary>
-        /// Called by game when a new item is added. 
+        /// Called elsewhere in the game to add an item to the Inventory
         /// - Instantiates InventoryEntry and finds a new slot for it.
-        /// - Returns false if there was no space for it
         /// </summary>
         /// <returns>True if successfully added, false if no space</returns>
         public bool AddNewItem(ItemData itemData, int amount)
         {
 
-            //If the item is stackable, and there is space, try to merge them.
-
-            InventoryEntry newEntry = new InventoryEntry(itemData, amount);
-
-            if (itemData.Stackable && CanMergeStack(itemData, amount))
+            // ---- 1) Checking if there is enough space before adding ----
+            // a) Stackable items: use CanMergeStack to check
+            if (itemData.Stackable)
             {
-                Debug.Log("Started merge operation");
+                if (!CanMergeStack(itemData, amount))
+                    return false;                       // not enough total space
+            }
+            // b) Non-stackables: count empty slots
+            else
+            {
+                int empty = 0;
+                for (int i = 0; i < _inventory.Count; i++)
+                    if (_inventory[i] == Empty) empty++;
+
+                if (empty < amount)
+                    return false;                       // not enough individual slots
+            }
+
+            // ---- 2) Place Items (guaranteed to fit) ----
+            //Trying to merge item into existing stacks:
+            if (itemData.Stackable)
+            {
+                InventoryEntry newEntry = new InventoryEntry(itemData, amount);
                 MergeStack(newEntry, amount);
-                PrintInventory();
-                return true;
             }
-
-            //If the item isn't stackable, just add it straight to the inventory :)
-
-            //Find an empty slot
-            for (int i = 0; i < _inventory.Count; i++)
+            //If the item isn't stackable, find empty entries for the items:
+            else
             {
-                if (_inventory[i] == Empty)                      //if slot is empty
+                int toAdd = amount;
+                for (int i = 0; i < _inventory.Count && toAdd > 0; i++)
                 {
-                    _inventory[i] = newEntry;                   //set to newEntry
-                    OnSlotChanged?.Invoke(i, _inventory[i]);    //
-                    PrintInventory();
-                    return true;
+                    if (_inventory[i] == Empty)
+                    {
+                        _inventory[i] = new InventoryEntry(itemData, 1);
+                        OnSlotChanged?.Invoke(i, _inventory[i]);
+                        toAdd--;
+                    }
                 }
             }
 
-            //The item couldn't be placed into the inventory. => "Not enough space"
-            Debug.Log("Not enough space.");
-            return false;
+            PrintInventory();   //for testing
+            return true;
         }
-
-
-        /// <summary>
-        /// Checks to see if the two entries stacked together will exceed the inventory limit.
-        /// </summary>
-        private bool CanMergeStack(ItemData itemData, int amount)
-        {
-            int StackableSpace = 0;
-            int emptySlots = 0;
-
-            //Goes through inventory and checks 
-            // (1) how many slots we have, and 
-            // (2) how many spaces are left in the existing stacks of the same itemtype.
-            for (int i = 0; i < _inventory.Count; i++)
-            {
-                var entry = _inventory[i];
-
-                if (entry == Empty)
-                {
-                    emptySlots++;
-                }
-                else if (entry.Item == itemData)
-                {
-                    StackableSpace += entry.MaxStack - entry.Amount;
-                }
-            }
-
-            //Tallies up all of the empty space in the inventory :)
-            int TotalStackableSpace = StackableSpace + (emptySlots * itemData.MaxStack);
-            return TotalStackableSpace >= amount;
-
-        }
-
-        //Merges the new InventoryEntry with existing stacks and empty slots
-        private void MergeStack(InventoryEntry newEntry, int amount)
-        {
-            //Loop though every slot in the inventory and add amount to existing stacks.
-            for (int i = 0; i < _inventory.Count && newEntry.Amount > 0; i++)
-            {
-                var entry = _inventory[i];
-
-                // Skip empty or mismatched items
-                if (entry == Empty || entry.Item != newEntry.Item)
-                    continue;
-
-                // If this stack is full, skip it
-                if (entry.Amount >= entry.MaxStack)
-                    continue;
-
-                // Merge as much as we can into this stack
-                int spaceLeft = entry.MaxStack - entry.Amount;
-                int toMerge = Mathf.Min(spaceLeft, newEntry.Amount);
-
-                entry.SetAmount(entry.Amount + toMerge);
-                newEntry.SetAmount(newEntry.Amount - toMerge);
-
-                OnSlotChanged?.Invoke(i, entry);
-            }
-
-            //Place new stacks of the item into the inventory, until there is nothing left.
-            for (int i = 0; i < _inventory.Count && newEntry.Amount > 0; i++)
-            {
-                if (_inventory[i] == Empty)
-                {
-                    int stackSize = Mathf.Min(newEntry.Amount, newEntry.MaxStack);
-                    _inventory[i] = new InventoryEntry(newEntry.Item, stackSize);
-                    newEntry.SetAmount(newEntry.Amount - stackSize);
-                    OnSlotChanged?.Invoke(i, _inventory[i]);
-                }
-            }
-
-            if (newEntry.Amount > 0)
-            {
-                Debug.LogError($"Item merge unsuccessful: {newEntry.Amount} items were lost");
-            }
-        }
-
 
         //Remove InventoryEntry from list based on slotIndex value
         public void RemoveItem(int slotIndex)
@@ -210,8 +160,11 @@ namespace GoopGame.Engine
         }
 
 
-
         // --- Player Controlled Inventory Operations ---
+
+        /// <summary>
+        /// Moves item out of the inventory into _heldEntry during pickup, and notifies UI
+        /// </summary>
         public bool BeginPickup(int slotIndex)
         {
             if (_heldEntry != null)
@@ -238,18 +191,14 @@ namespace GoopGame.Engine
             return true;
         }
         
-        /// <summary>
-        /// Sets the _heldEntry to null
-        /// </summary>
-        private void ClearHeld()
-        {
-            _heldEntry = null;
-            _heldOrigin = -1;
-        }
+
+
+        // ---- Public API - Player controlled item management (UI) ----
 
         /// <summary>
         /// Attempts to place the remaining held stack into target Index.
         /// Implements move into empty slot, merging stacks, and swapping entries.
+        /// On merging stacks, the remainder will return to its original slot.
         /// </summary>
         public bool PlaceHeld(int targetIndex)
         {
@@ -289,11 +238,10 @@ namespace GoopGame.Engine
                 {
                     ClearHeld();
                 }
+                //If there are items left after merge operation, treat the hold as cancelled (to return the remaining items to inventory)
                 else
                 {
-                    _inventory[_heldOrigin] = _heldEntry;
-                    OnSlotChanged?.Invoke(_heldOrigin, _inventory[_heldOrigin]);
-                    ClearHeld();
+                    CancelHeld();
                 }
                 return true;
             }
@@ -310,7 +258,7 @@ namespace GoopGame.Engine
         }
 
         /// <summary>
-        /// Cancels the drag: places the held stack back into its origin slot (if empty) or the first free slot.
+        /// Cancels the drag: places the held stack back into the inventory, preferring its original slot
         /// </summary>
         public void CancelHeld()
         {
@@ -319,25 +267,17 @@ namespace GoopGame.Engine
             // 1) Try original slot first (handles merge, move, or swap)
             if (_heldOrigin >= 0 && PlaceHeld(_heldOrigin))
                 return; // success – PlaceHeld internally cleared the held entry
+                
 
             // 2) Try to merge into any compatible partial stack
-            if (_heldEntry.Stackable) {
-                for (int i = 0; i < _inventory.Count && _heldEntry != null; i++)
+            if (_heldEntry.Stackable)
+            {
+                MergeIntoPartialStacks(_heldEntry);
+
+                if (_heldEntry.Amount == 0)
                 {
-                    var stack = _inventory[i];
-                    if (stack == Empty) continue;
-                    if (stack.Item != _heldEntry.Item) continue;
-                    if (stack.Amount >= stack.MaxStack) continue;
-
-                    int space = stack.MaxStack - stack.Amount;
-                    int toMove = Mathf.Min(space, _heldEntry.Amount);
-                    stack.SetAmount(stack.Amount + toMove);
-                    _heldEntry.SetAmount(_heldEntry.Amount - toMove);
-                    OnSlotChanged?.Invoke(i, stack);
-
-                    if (_heldEntry.Amount == 0) {
-                        ClearHeld();
-                        return; }
+                    ClearHeld();
+                    return;
                 }
             }
 
@@ -358,7 +298,7 @@ namespace GoopGame.Engine
         }
 
 
-                /// <summary>
+        /// <summary>
         /// Moves exactly one item from the held stack to the target slot if possible.
         /// Returns true if a transfer happened.
         /// </summary>
@@ -397,9 +337,11 @@ namespace GoopGame.Engine
             return true;
         }
 
+
         /// <summary>
-        /// Splits a stack in the inventory into two, and assigns half to a new slot - if possible. Else returns false.
+        /// Splits a stack in the inventory into two, and assigns half to a new slot
         /// </summary>
+        /// <returns>True if the stack was split, else false</returns>
         public bool SplitStack(int index)
         {
             InventoryEntry entry = _inventory[index];
@@ -435,9 +377,113 @@ namespace GoopGame.Engine
             return false;
         }
 
-        private bool IsValidIndex(int idx) {
+
+
+        // ---- Internal Operations ----
+        /// <summary>
+        /// Checks to see if a quantity of items merged into existing slots/items will exceed the inventory limit.
+        /// </summary>
+        /// <returns>True if there is space to merge the stack, false if no space</returns>
+        private bool CanMergeStack(ItemData itemData, int amount)
+        {
+            int StackableSpace = 0;
+            int emptySlots = 0;
+
+            //Goes through inventory and checks 
+            // (1) how many slots we have, and 
+            // (2) how many spaces are left in the existing stacks of the same itemtype.
+            for (int i = 0; i < _inventory.Count; i++)
+            {
+                var entry = _inventory[i];
+
+                if (entry == Empty)
+                {
+                    emptySlots++;
+                }
+                else if (entry.Item == itemData)
+                {
+                    StackableSpace += entry.MaxStack - entry.Amount;
+                }
+            }
+
+            //Tallies up all of the empty space in the inventory :)
+            int TotalStackableSpace = StackableSpace + (emptySlots * itemData.MaxStack);
+            return TotalStackableSpace >= amount;
+        }
+
+        /// <summary>
+        /// Merges the new InventoryEntry with existing stacks and empty slots.
+        /// Should never be used unless CanMergeStack has confirmed there is space.
+        /// </summary>
+        private void MergeStack(InventoryEntry newEntry, int amount)
+        {
+            //Loop though every slot in the inventory and add amount to existing stacks.
+            MergeIntoPartialStacks(newEntry);   // helper mutates newEntry.Amount
+
+            //Place new stacks of the item into the inventory, until there is nothing left.
+            for (int i = 0; i < _inventory.Count && newEntry.Amount > 0; i++)
+            {
+                if (_inventory[i] == Empty)
+                {
+                    int stackSize = Mathf.Min(newEntry.Amount, newEntry.MaxStack);
+                    _inventory[i] = new InventoryEntry(newEntry.Item, stackSize);
+                    newEntry.SetAmount(newEntry.Amount - stackSize);
+                    OnSlotChanged?.Invoke(i, _inventory[i]);
+                }
+            }
+
+            if (newEntry.Amount > 0)
+            {
+                Debug.LogError($"Item merge unsuccessful: {newEntry.Amount} items were lost");
+            }
+        }
+
+        private void MergeIntoPartialStacks(InventoryEntry source)
+        {
+            // Non-stackables cannot be merged; just return the original amount
+            if (!source.Stackable)
+                return;
+
+            // Loop through every slot and add as much as possible
+            for (int i = 0; i < _inventory.Count && source.Amount > 0; i++)
+            {
+                var entry = _inventory[i];
+
+                // Skip empty slots or mismatching items
+                if (entry == Empty || entry.Item != source.Item)
+                    continue;
+
+                // Skip if this stack is already full
+                if (entry.Amount >= entry.MaxStack)
+                    continue;
+
+                // Merge as much as fits here
+                int spaceLeft = entry.MaxStack - entry.Amount;
+                int toMove    = Mathf.Min(spaceLeft, source.Amount);
+
+                entry.SetAmount(entry.Amount + toMove);
+                source.SetAmount(source.Amount - toMove);
+
+                OnSlotChanged?.Invoke(i, entry);
+            }
+        }
+
+
+        // ---- Low-level utilities -----
+        private bool IsValidIndex(int idx)
+        {
             return idx >= 0 && idx < _inventory.Count;
         }
+
+        /// <summary>
+        /// Sets the _heldEntry to null
+        /// </summary>
+        private void ClearHeld()
+        {
+            _heldOrigin = -1;
+            _heldEntry = null;
+        }
+
 
         private void PrintInventory()
         {

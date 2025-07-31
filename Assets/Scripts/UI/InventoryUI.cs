@@ -53,7 +53,9 @@ namespace GoopGame.UI
             _inventoryManager.OnSlotChanged += UpdateSlot;
         }
 
-        //Initializes the grid with a specific amount of slots.
+        /// <summary>
+        /// Initializes the grid with a specific amount of slots.
+        /// </summary>
         public void InitSlots(int slotAmount)
         {
             //Clearing out the previous stuff so we don't get dupes
@@ -70,13 +72,18 @@ namespace GoopGame.UI
             }
         }
 
+        /// <summary>
+        /// Updates all slots with the correct InventoryEntry instance
+        /// </summary>
         public void UpdateAll(List<InventoryEntry> inventory)
         {
             for (int i = 0; i < inventory.Count; i++)
                 UpdateSlot(i, inventory[i]);
         }
 
-        //Updates a given slot with a new InventoryEntry.
+        /// <summary>
+        /// Instantiates the correct InventoryItem for a single slot. This is called often.
+        /// </summary>
         public void UpdateSlot(int slotIndex, InventoryEntry entry)
         {
             // if this slot is currently being dragged, ignore the redraw ---
@@ -107,7 +114,9 @@ namespace GoopGame.UI
             itemUI.Init(slotIndex, entry, this);
         }
 
-        //Erases a given InventoryItem from the grid
+        /// <summary>
+        /// Deletes the InventoryItem gameobject and its children
+        /// </summary>
         public void ClearSlot(int slotIndex)
         {
             InventorySlot slot = _slots[slotIndex];
@@ -116,7 +125,9 @@ namespace GoopGame.UI
                 Destroy(child.gameObject);
         }
 
-        //Erases all InventoryItems from the grid
+        /// <summary>
+        /// Erases all InventoryItems from the grid
+        /// </summary>
         public void ClearAllItems()
         {
             foreach (Transform child in _gridContainer)

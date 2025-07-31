@@ -12,6 +12,7 @@ namespace GoopGame.UI
     /// <summary>
     /// Script for the InventoryItem Prefab used in the UI.
     /// Uses ItemData scriptable object to display the correct images and text.
+    /// Handles Player inputs onto the item, for swapping, merging and stacking purposes.
     /// </summary>
     public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
     {
@@ -71,7 +72,9 @@ namespace GoopGame.UI
             //TODO: Hover over item to see its name and description
         }
 
-        //Used during right-click item transfer. Called by the target InventorySlot.
+        /// <summary>
+        /// Used during right-click item transfer. Called by the target InventorySlot.
+        /// </summary>
         public void DecreaseDisplayAmount()
         {
             _displayAmount--;
@@ -122,7 +125,9 @@ namespace GoopGame.UI
             _image.raycastTarget = false;
         }
 
-
+        /// <summary>
+        /// Updates the visual of the item being dragged. UI-only operation
+        /// </summary>
         public void OnDrag(PointerEventData eventData)
         {
             if (eventData.button != PointerEventData.InputButton.Left)
@@ -143,8 +148,8 @@ namespace GoopGame.UI
         }
 
         /// <summary>
-        /// By default, parentAfterDrag remains the same and so the item will snap back to it's original position.
-        /// However,  other scripts can change this variable to parent the UI-element to something else.
+        /// When drag ends, the s_CurrentDrag flag is reset to null
+        /// Calls inventory with the correct operation, based on what inputs occurred.
         /// </summary>
         public void OnEndDrag(PointerEventData eventData)
         {
@@ -178,7 +183,10 @@ namespace GoopGame.UI
                 s_CurrentDrag = null;
         }
 
-
+        /// <summary>
+        /// When player right clicks while dragging an item - call InventoryUI to try to deposit one.
+        /// When a player right clicks with no held item - call InventoryUI to try to split divide the stack in half.
+        /// </summary>
         public void OnPointerClick(PointerEventData eventData)
         {
             // If an item is currently being dragged...

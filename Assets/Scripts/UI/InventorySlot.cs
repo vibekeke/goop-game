@@ -3,6 +3,9 @@ using UnityEngine.EventSystems;
 
 namespace GoopGame.UI {
 
+    /// <summary>
+    /// Visual container for InventoryItems. Can also register right click so player can deposit items into an empty slot.
+    /// </summary>
     public class InventorySlot : MonoBehaviour, IPointerClickHandler
     {
         public int slotIndex;           //Each slots knows its own index for easier communication with InventoryManager
