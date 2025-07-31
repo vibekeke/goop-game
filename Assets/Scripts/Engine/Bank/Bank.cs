@@ -8,16 +8,18 @@ namespace GoopGame.Engine
     /// </summary>
     public class Bank
     {
-        // goop coin variable for bank object
-        private int GoopCoins;
+        // goop coin variable for bank object, only to be changed within class
+        // with initial value 100
+        private const int GoopCoinsInitialValue = 100;
+        public int GoopCoins { get; private set; }
 
         /// <summary>
         /// constructor for new bank object
         /// <summary>
         public Bank()
         {
-            // goop coin variable for game instance set to 100 by default
-            GoopCoins = 100;
+            // set goop coin value to initial value on creation
+            GoopCoins = GoopCoinsInitialValue;
         }
 
         /// <summary>
@@ -48,11 +50,6 @@ namespace GoopGame.Engine
         public void Add(int addValue)
         {
             this.GoopCoins += addValue;
-        }
-
-        public int GetGoopCoins()
-        {
-            return this.GoopCoins;
         }
     } 
 }
