@@ -7,6 +7,9 @@ namespace GoopGame.Utility
     /// </summary>
     public class GlobalManager : MonoBehaviour
     {
+        // static, permanent global manager instance for game
+        public static GlobalManager Instance;
+        
         /// <summary>
         /// Camera to assign as the main camera, set to Camera.main if null.
         /// </summary>
@@ -17,8 +20,22 @@ namespace GoopGame.Utility
         /// </summary>
         public static Camera Camera { get; private set; }
 
+        // uninitialized bank instance for game
+        public Bank Bank;
+
         private void Awake()
         {
+            // check if Instance is set (not null), and that Instance isn't set to this instance
+            if (Instance != null && Instance != this)
+            {
+            // if it already exists, destroy this GlobalManager instance, since it already exists
+                Destroy(gameObject);
+                return;
+            }
+            // if we have not exited and GlobalManager is uninitialized, set Instance to this
+            Instance = this;
+            Bank = new Bank();
+
             if (_cameraToSet == null)
                 Camera = Camera.main;
             else
