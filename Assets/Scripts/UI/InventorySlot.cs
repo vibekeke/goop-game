@@ -3,36 +3,37 @@ using UnityEngine.EventSystems;
 
 namespace GoopGame.UI {
 
-public class InventorySlot : MonoBehaviour, IDropHandler
+    /// <summary>
+    /// Visual container for InventoryItems. Can also register right click so player can deposit items into an empty slot.
+    /// </summary>
+    public class InventorySlot : MonoBehaviour, IPointerClickHandler
     {
-        /// <summary>
-        /// Changes the parent of the dropped element to self. Swaps items if inventory slot is already occupied.
-        /// </summary>
-        public void OnDrop(PointerEventData eventData)
+        public int slotIndex;           //Each slots knows its own index for easier communication with InventoryManager
+        private InventoryUI _inventoryUI;
+
+
+        public void Init(int index, InventoryUI ui)
         {
-            //If there is not item in this slot:
-            if (transform.childCount == 0)
-            {
-                GameObject dropped = eventData.pointerDrag;
-                DraggableUI draggable = dropped.GetComponent<DraggableUI>();    //Gets the item script
-                draggable.ParentAfterDrag = transform;                          //Sets the items parent to self
-            }
-            //If there is an item, swap them:
-            else
-            {
-                GameObject dropped = eventData.pointerDrag;
-                DraggableUI droppedDraggable = dropped.GetComponent<DraggableUI>();
+            slotIndex = index;
+            _inventoryUI = ui;
+        }
 
-                GameObject current = transform.GetChild(0).gameObject;
-                DraggableUI currentDraggable = current.GetComponent<DraggableUI>();
 
-                //Set the previous item's parent field to the dropped item to swap them.
-                currentDraggable.transform.SetParent(droppedDraggable.ParentAfterDrag);
-                currentDraggable.transform.localPosition = Vector3.zero;
+        /// <summary>
+        /// Requests an item transfer from a held stack onto the inventory slot (transfer of 1 item).
+        /// </summary>
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            // Only care about right clicks while something is being dragged
+            if (eventData.button != PointerEventData.InputButton.Right) return;
+            if (!_inventoryUI.HasHeldEntry) return;
 
-                droppedDraggable.ParentAfterDrag = transform;
-            }
-            //TODO: Add logic for stackable items (should probably call an InventoryManager)
+            // Ask UI → Manager to move ONE item
+            bool deposited = _inventoryUI.TryDepositOne(slotIndex);
+
+            // If it worked, shrink the number on the icon in hand
+            if (deposited)
+                InventoryItem.CurrentDrag.DecreaseDisplayAmount();
         }
     }
 }

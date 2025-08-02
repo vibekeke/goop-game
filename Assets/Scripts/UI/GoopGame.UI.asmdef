@@ -2,8 +2,10 @@
     "name": "GoopGame.UI",
     "rootNamespace": "GoopGame.UI",
     "references": [
+        "GUID:088c82e76bf255542b3c7f4fc04ab04f",
         "GUID:d91afe2ededf68642bbefd0fee6d5413",
-        "GUID:22bb50d266fa8864385aabb1f6c6c5a5"
+        "GUID:22bb50d266fa8864385aabb1f6c6c5a5",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
